@@ -113,7 +113,7 @@
                                 console.log(`创新创业活动名称为：${obj.list[i].name} `)
                                 msg += `\n创新创业活动名称为：${obj.list[i].name}`
                                 console.log(`创新创业活动时间为：${obj.list[i].activitytime} `)
-                                msg += `\n创新创业活动名称为：${obj.list[i].activitytime}`
+                                msg += `\n创新创业活动时间为：${obj.list[i].activitytime}`
                                 console.log(`创新创业活动状态为：${obj.list[i].statusText} `)
                                 msg += `\n创新创业活动状态为：${obj.list[i].statusText}`
                                 msg +=`\n`
@@ -126,7 +126,7 @@
                                 console.log(`实践实习活动名称为：${obj.list[i].name} `)
                                 msg += `\n实践实习活动名称为：${obj.list[i].name}`
                                 console.log(`实践实习活动时间为：${obj.list[i].activitytime} `)
-                                msg += `\n实践实习活动名称为：${obj.list[i].activitytime}`
+                                msg += `\n实践实习活动时间为：${obj.list[i].activitytime}`
                                 console.log(`实践实习活动状态为：${obj.list[i].statusText} `)
                                 msg += `\n实践实习活动状态为：${obj.list[i].statusText}`
                                 msg +=`\n`
@@ -139,7 +139,7 @@
                                 console.log(`志愿公益活动名称为：${obj.list[i].name} `)
                                 msg += `\n志愿公益活动名称为：${obj.list[i].name}`
                                 console.log(`志愿公益活动时间为：${obj.list[i].activitytime} `)
-                                msg += `\n志愿公益活动名称为：${obj.list[i].activitytime}`
+                                msg += `\n志愿公益活动时间为：${obj.list[i].activitytime}`
                                 console.log(`志愿公益活动状态为：${obj.list[i].statusText} `)
                                 msg += `\n志愿公益活动状态为：${obj.list[i].statusText}`
                                 msg +=`\n`
@@ -188,10 +188,10 @@
      if (!message)
          return;
  
-     if (Notify1 > 0) {
+     if (Notify > 0) {
          if ($.isNode()) {
-             var notify = require('./sendNotify1');
-             await notify.sendNotify1($.name, message);
+             var notify = require('./sendNotify');
+             await notify.sendNotify($.name, message);
          } else {
              $.msg(message);
          }
