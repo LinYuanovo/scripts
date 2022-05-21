@@ -1,6 +1,6 @@
 /**
  * @ 临渊
- * 软件；引力生活
+ * 软件： 引力生活
  * 功能：获取CK，签到，看专属视频和普通视频
  * 无需抓包，填入注册的手机号和密码即可
  * 变量格式：export ylshzm='账号&密码@账号&密码 '  多个账号密码用@分割 
@@ -9,8 +9,8 @@
  const jsname = "引力生活";
  const $ = Env(jsname);
  const notify = $.isNode() ? require('./sendNotify') : '';
- const Notify = 0; //0为关闭通知，1为打开通知,默认为1
- const debug = 1; //0为关闭调试，1为打开调试,默认为0
+ const Notify = 1; //0为关闭通知，1为打开通知,默认为1
+ const debug = 0; //0为关闭调试，1为打开调试,默认为0
  //////////////////////
  let ylshzm = process.env.ylshzm;
  let ylshck = '';
