@@ -123,7 +123,7 @@
                      console.log(data)
                  }
                  back = eval("(" + data + ")");
-                 let result = JSON.parse(data);
+                 let result = eval("(" + data + ")");
                  if (result.status == 1) {
                      console.log(`【签到成功】🎉`)
                      msg += `\n【飞猫签到成功】🎉\n您的福利点点数为：${result.data.point}`
@@ -176,7 +176,7 @@
                     console.log(data)
                 }
                 back = eval("(" + data + ")");
-                let result = JSON.parse(data);
+                let result = eval("(" + data + ")");
                 if (result.status == 1) {
                     console.log(`领取连签10天奖励成功`)
                     msg += `\n领取连签10天奖励成功`
@@ -227,7 +227,7 @@ function getBonus30(timeout = 3 * 1000) {
                     console.log(data)
                 }
                 back = eval("(" + data + ")");
-                let result = JSON.parse(data);
+                let result = eval("(" + data + ")");
                 if (result.status == 1) {
                     console.log(`领取连签30天奖励成功🎉`)
                     msg += `\n领取连签30天奖励成功`
@@ -279,7 +279,7 @@ function getBonus30(timeout = 3 * 1000) {
                     console.log(data)
                 }
                 back = eval("(" + data + ")");
-                let result = JSON.parse(data);
+                let result = eval("(" + data + ")");
                 if (result.status == 1) {
                     console.log(`【签到成功】🎉`)
                     msg += `\n【橘猫签到成功】🎉\n您的福利点点数为：${result.data.point}`
