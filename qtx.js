@@ -2,12 +2,13 @@
  * @ 临渊
  * 日期：5-21
  * 软件：青碳行
- * 功能：签到、分享、回答问题、收取精力值
+ * 功能：签到、分享、回答问题、收取精力值、查可兑换余额
+ * 抓包之前先把这些任务都点一下，手动开启一下，不然跑不了
+ * 兑换的是 数字人民币 秒到
  * 抓取域名
  * carbon.lcago.cn
  * 里面的token和deviceCoding
  * 变量格式：export qtxtk='token&deviceCoding@token&deviceCoding'  多个账号用@分割 
- * 
  */
 
 const { json } = require('stream/consumers');
@@ -15,7 +16,7 @@ const { json } = require('stream/consumers');
  const jsname = "青碳行";
  const $ = Env(jsname);
  const notify = $.isNode() ? require('./sendNotify') : '';
- const Notify = 0; //0为关闭通知，1为打开通知,默认为1
+ const Notify = 1; //0为关闭通知，1为打开通知,默认为1
  const debug = 0; //0为关闭调试，1为打开调试,默认为0
  //////////////////////
  let qtxtk = process.env.qtxtk;
@@ -25,6 +26,9 @@ const { json } = require('stream/consumers');
  let queIdArr = [];
  let queAnswerArr = [];
  let calIdArr = [];
+ let amt = 0.00;
+ let beforeAmt = 0.00;
+ let afterAmt = 0.00;
  let url = {
     url: 'https://carbon.lcago.cn/',
     headers: {
@@ -68,6 +72,12 @@ const { json } = require('stream/consumers');
                  console.log(`\n 【debug】 这是你第 ${num} 账号信息:\n ${data}\n`);
              }
              msg += `\n第${num}个账号运行结果：`
+
+             console.log('开始查询余额');
+             await getExchange();
+             await $.wait(2 * 1000);
+             beforeAmt = amt;
+             msg += `\n运行前余额为：${beforeAmt}`;
              
              console.log('开始签到');
              await signIn();
@@ -98,6 +108,13 @@ const { json } = require('stream/consumers');
                 await doCal(l);
                 await $.wait(2 * 1000);
              }
+
+             console.log('开始查询余额');
+             await getExchange();
+             await $.wait(2 * 1000);
+             afterAmt = amt;
+             msg += `\n运行后余额为：${afterAmt}`;
+
          }
          await SendMsg(msg);
      }
@@ -130,17 +147,15 @@ const { json } = require('stream/consumers');
                  let result = JSON.parse(data);
                  if (result.respcod == 01) {
  
-                     console.log(`签到成功`)
-                     msg += `\n签到成功`
+                     console.log(`\n签到成功`)
 
                  } else if (result.respcod === 02) {
 
-                     console.log(`\n 今日已签到\n `)
-                     msg += `\n今日已签到`
+                     console.log(`\n 今日已签到 `)
 
                  } else {  
                     
-                     console.log(`\n签到失败，原因是${result.respmsg}\n `)
+                     console.log(`\n签到失败，原因是${result.respmsg} `)
  
                  }
  
@@ -247,17 +262,15 @@ const { json } = require('stream/consumers');
                 let result = JSON.parse(data);
                 if (result.respcod == 01) {
 
-                    console.log(`回答问题成功`)
-                    msg += `\n回答问题成功`
+                    console.log(`\n回答问题成功`)
 
                 } else if (result.respcod === 02) {
 
-                    console.log(`\n该题目已回答\n `)
-                    msg += `\n该题目已回答`
+                    console.log(`\n该题目已回答 `)
 
                 } else {  
                    
-                    console.log(`\n回答失败，原因是${result.respmsg}\n `)
+                    console.log(`\n回答失败，原因是${result.respmsg} `)
 
                 }
 
@@ -333,16 +346,14 @@ const { json } = require('stream/consumers');
                 if (result.respcod == 01) {
 
                     console.log(`收取精力成功`)
-                    msg += `\n收取精力成功`
 
                 } else if (result.respcod === 02) {
 
-                    console.log(`\n无可收精力\n `)
-                    msg += `\n无可收精力`
+                    console.log(`\n无可收精力 `)
 
                 } else {  
                    
-                    console.log(`\n收取失败，原因是${result.respmsg}\n `)
+                    console.log(`\n收取失败，原因是${result.respmsg}`)
 
                 }
 
@@ -355,6 +366,45 @@ const { json } = require('stream/consumers');
     })
 }
 
+ /**
+ * 查询可兑换余额
+ */
+  function getExchange(timeout = 2 * 1000) {
+    url.url = 'https://carbon.lcago.cn/myCarbonAssets/myData'
+    url.body = `{"token":"${data[0]}","platform":"android","model":"MI8SE","version":"1.1.1_VersionCode_111","deviceCoding":"${data[1]}","language":"ZH","systemversion":"10"}`
+    return new Promise((resolve) => {
+
+        if (debug) {
+            console.log(`\n【debug】=============== 这是 查询可兑换余额 请求 url ===============`);
+            console.log(JSON.stringify(url));
+        }
+
+        $.post(url, async (error, response, data) => {
+            try {
+                if (debug) {
+                    console.log(`\n\n【debug】===============这是 查询可兑换余额 返回data==============`);
+                    console.log(data)
+                }
+
+                let result = JSON.parse(data);
+                if (result.respcod == 01) {
+
+                    console.log(`\n查询可兑换余额成功，可兑换：${result.data.exchangeAmt}`)
+                    amt =+ `${result.data.exchangeAmt}`;
+
+                } else {  
+                   
+                    console.log(`\n查询可兑换余额，原因是${result.respmsg} `)
+                }
+
+            } catch (e) {
+                console.log(e)
+            } finally {
+                resolve();
+            }
+        }, timeout)
+    })
+}
  // ============================================变量检查============================================ \\
  async function Envs() {
      if (qtxtk) {
