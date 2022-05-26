@@ -8,8 +8,7 @@
  * 变量格式：export lxlyapp='Authorization@xxx '  多个账号用@分割 
  */
 
- const jsname = "联想乐云";
- const $ = Env(jsname);
+ const $ = new Env('联想乐云');
  const notify = $.isNode() ? require('./sendNotify') : '';
  const Notify = 1; //0为关闭通知，1为打开通知,默认为1
  const debug = 0; //0为关闭调试，1为打开调试,默认为0
