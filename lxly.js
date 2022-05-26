@@ -4,7 +4,7 @@
  * 软件： 联想乐云
  * 功能： 签到领取云盘容量
  * 抓取
- * lenovo.com  域名下的任意Authorization 或者 x-lenovows-authorization
+ * pimapi.lenovo.com  域名下的任意Authorization 或者 x-lenovows-authorization
  * 变量格式：export lxlyapp='Authorization@xxx '  多个账号用@分割 
  */
 
