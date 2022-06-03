@@ -15,12 +15,16 @@
  const notify = $.isNode() ? require('./sendNotify') : '';
  const Notify = 1; //0为关闭通知，1为打开通知,默认为1
  const debug = 0; //0为关闭调试，1为打开调试,默认为0
+ const fs = require('fs');
  //////////////////////
  let sxsc = process.env.sxsc;
  let sxscArr = [];
  let data = '';
  let msg = '';
  let tokenArr = [];
+ let refreshTk = '';
+ let refreshTkArr = [];
+ let refreshTk2 = '';
  let margin = 0;
  let refreshback = 0;
  let url = {
@@ -65,7 +69,7 @@
              data = sxscArr[index].split('&');
  
              if (debug) {
-                 console.log(`\n 【debug】 这是你第 ${num} 账号信息:\n ${data}\n`);
+                 console.log(`\n 【debug】 这是你第 ${num} 个账号信息:\n ${data}\n`);
              }
 
              msg += `\n第${num}个账号运行结果：`
@@ -73,17 +77,18 @@
              console.log('开始刷新token');
              await refreshToken(index);
              await $.wait(2 * 1000);
+             refreshTkArr[index] = refreshTk;
 
              if (refreshback){
 
                 console.log('开始签到');
                 await signin(index);
                 await $.wait(2 * 1000);
-   
+  
                 console.log('开始查券');
                 await queryCoupon(index);
                 await $.wait(2 * 1000);
-   
+  
                 if (margin!=0) {
                    console.log('开始抢券');
                    await getCoupon(index);
@@ -94,7 +99,10 @@
              else {
                  console.log("\nrefresh_token错误，请重新抓包填入")
                  msg += `\nrefresh_token错误，请重新抓包填入`
-             }
+             } 
+         }
+         if (refreshback) {
+            await modify();
          }
          await SendMsg(msg);
      }
@@ -259,7 +267,7 @@
                 } else {  
 
                     console.log(`\n抢券失败,原因是:${result.message}`)
-
+                    msg += `\n抢券失败,原因是:${result.message}`
                 }
 
             } catch (e) {
@@ -306,8 +314,7 @@
                     console.log(`\n刷新成功，最新token为${result.data.access_token}`)
                     tokenArr[num] = `${result.data.access_token}`
                     console.log(`\n最新的refresh_token为： ${result.data.refresh_token}`)
-                    msg += `\n最新的refresh_token为： ${result.data.refresh_token}`
-
+                    refreshTk = `${result.data.refresh_token}`
                 } else if (result.status == 400) {  
 
                     console.log(`\n刷新失败,原因是:refresh_token错误`)
@@ -324,6 +331,24 @@
         }, timeout)
     })
 }
+
+ /**
+  * 修改配置文件
+  */
+ function modify() {
+                
+    fs.readFile('/ql/data/config/config.sh','utf8',function(err,dataStr){
+        if(err){
+            return console.log('读取文件失败！'+err)
+        }
+        else {
+            var result = dataStr.replace(/sxsc="[\w-@]{0,1000}"/g,`sxsc="${refreshTkArr[0]}@${refreshTkArr[1]}"`);
+            fs.writeFile('/ql/data/config/config.sh', result, 'utf8', function (err) {
+                     if (err) {return console.log(err);}
+                });
+            }
+    })
+ }
 
  // ============================================变量检查============================================ \\
  async function Envs() {
