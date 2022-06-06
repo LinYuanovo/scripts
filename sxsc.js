@@ -84,17 +84,15 @@
                 console.log('开始签到');
                 await signin(index);
                 await $.wait(2 * 1000);
-  
+
                 console.log('开始查券');
                 await queryCoupon(index);
                 await $.wait(2 * 1000);
-  
-                if (margin!=0) {
-                   console.log('开始抢券');
-                   await getCoupon(index);
-                   await $.wait(2 * 1000);
-                }
-                else console.log("89-88优惠券已无，寄！")
+ 
+                console.log('开始抢券');
+                await getCoupon(index);
+                await $.wait(2 * 1000);
+                
              }
              else {
                  console.log("\nrefresh_token错误，请重新抓包填入")
