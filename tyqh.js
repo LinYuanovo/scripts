@@ -1,13 +1,14 @@
 /**
- 作者：临渊
+ @ 临渊
  日期：6-12
  小程序：统一快乐星球
  入口：活动->茄皇
  功能：除了助力都能完成
- 抓包：api.xiaoyisz.com  里 headers 的 authorization
- 变量：tyau='authorization@xxxx '  多个账号用 @ 或者 换行 分割 
+ 抓包：api.xiaoyisz.com/qiehuang/ga/public/api/login  这个登录包里 body 部分的 全部
+ 变量：tybody='body@xxxx '  多个账号用 @ 或者 换行 分割 
  定时一天三次，八个小时一次收取冒险奖励
  cron: 10 0/8 * * *
+ 6-14 更新了AU获取方式，理论上不会过期了
  */
 
  const $ = new Env('统一茄皇');
@@ -16,8 +17,10 @@
  const Notify = 1; //0为关闭通知，1为打开通知,默认为1
  const debug = 0; //0为关闭调试，1为打开调试,默认为0
  //////////////////////
- let tyau = process.env.tyau;
- let tyauArr = [];
+ let tyau = '';
+ let tybody = process.env.tybody;
+ let tybodyArr = [];
+ let newAuArr = [];
  let tyPlantId = '';
  let auback = 0;
  let data = '';
@@ -43,19 +46,28 @@
 
          await poem();
         
-         log(`\n=================== 共找到 ${tyauArr.length} 个账号 ===================`)
+         log(`\n=================== 共找到 ${tybodyArr.length} 个账号 ===================`)
  
          if (debug) {
-             log(`【debug】 这是你的全部账号数组:\n ${tyauArr}`);
+             log(`【debug】 这是你的全部账号数组:\n ${tybodyArr}`);
          }
  
-         for (let index = 0; index < tyauArr.length; index++) {
+         for (let index = 0; index < tybodyArr.length; index++) {
             
-             tyau = tyauArr[index];
+             tybody = tybodyArr[index];
              let num = index + 1
+
              log(`\n========= 开始【第 ${num} 个账号】=========\n`)
+
+             if (debug) {
+                log(`【debug】 这是你的第 ${num} 个账号数组:\n ${tybody}`);
+             }
  
-             msg += `\n第${num}个账号：`
+             msg += `\n第${num}个账号运行结果：`
+             
+             log('开始刷新AU');
+             await refreshAu();
+             await $.wait(2 * 1000);
 
              log('开始查询任务');
              await getTask();
@@ -78,6 +90,10 @@
                     await getDrawPriz(i);
                     await $.wait(2 * 1000);
                  }
+
+                 log('开始收取阳光');
+                 await getSunshine();
+                 await $.wait(2 * 1000);
 
                  log("开始进行挑战");
                  await startCallenge();
@@ -112,7 +128,54 @@
      .catch((e) => log(e))
      .finally(() => $.done())
 
- 
+ /**
+  * 刷新AU  
+  */
+  function refreshAu(num) {
+    let url = {
+       url : `http://api.xiaoyisz.com/qiehuang/ga/public/api/login`,
+       headers : {
+           "Host": "api.xiaoyisz.com",
+           "user-agent": "Mozilla/5.0 (Linux; Android 10; MI 8 Build/QKQ1.190828.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/86.0.4240.99 XWEB/3235 MMWEBSDK/20220204 Mobile Safari/537.36 MMWEBID/6242 MicroMessenger/8.0.20.2080(0x28001435) Process/appbrand0 WeChat/arm64 Weixin NetType/WIFI Language/zh_CN ABI/arm64 miniProgram/wx532ecb3bdaaf92f9",
+           "Content-Type": "application/json"
+       },
+       body : `${tybody}`
+    }
+    return new Promise((resolve) => {
+
+        if (debug) {
+            log(`\n【debug】=============== 这是 刷新AU 请求 url ===============`);
+            log(JSON.stringify(url));
+        }
+
+        $.post(url, async (error, response, data) => {
+            try {
+                if (debug) {
+                    log(`\n\n【debug】===============这是 刷新AU 返回data==============`);
+                    log(data)
+                }
+
+                let result = JSON.parse(data);
+                if (result.code == 0) {
+
+                    log(`刷新成功，新的AU为：${result.data}`)
+                    tyau = result.data;
+
+                } else {  
+
+                    log(`刷新失败，原因是：${result.message}`)
+
+                }
+
+            } catch (e) {
+                log(e)
+            } finally {
+                resolve();
+            }
+        })
+    })
+}
+
  /**
   * 上报任务  
   */
@@ -687,25 +750,68 @@
     })
  }
 
+ /**
+  * 收取阳光  
+  */
+  function getSunshine(timeout = 2*1000) {
+    let url = {
+        url : `http://api.xiaoyisz.com/qiehuang/ga/user/daily/pickup`,
+        headers : {
+            "Host": "api.xiaoyisz.com",
+            "authorization": `${tyau}`,
+            "user-agent": "Mozilla/5.0 (Linux; Android 10; MI 8 Build/QKQ1.190828.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/86.0.4240.99 XWEB/3235 MMWEBSDK/20220204 Mobile Safari/537.36 MMWEBID/6242 MicroMessenger/8.0.20.2080(0x28001435) Process/appbrand0 WeChat/arm64 Weixin NetType/WIFI Language/zh_CN ABI/arm64 miniProgram/wx532ecb3bdaaf92f9",
+            "content-type": "application/json"
+        },
+     }
+    return new Promise((resolve) => {
+
+        if (debug) {
+            log(`\n【debug】=============== 这是 收取阳光 请求 url ===============`);
+            log(JSON.stringify(url));
+        }
+
+        $.get(url, async (error, response, data) => {
+            try {
+                if (debug) {
+                    log(`\n\n【debug】===============这是 收取阳光 返回data==============`);
+                    log(data)
+                }
+
+                let result = JSON.parse(data);
+                if (result.code == 0){
+                    log('收取阳光成功')
+                } else if (result.code == 1000){
+                    log('收取阳光失败')
+                } else log(`收取失败，原因是：${result.message}`)
+
+            } catch (e) {
+                log(e)
+            } finally {
+                resolve();
+            }
+        }, timeout)
+    })
+ }
+
  // ============================================变量检查============================================ \\
  async function Envs() {
-     if (tyau) {
-         if (tyau.indexOf("@") != -1) {
-             tyau.split("@").forEach((item) => {
-                 tyauArr.push(item);
-             });
-         } else if (tyau.indexOf("\n") != -1){
-             tyau.split("\n").forEach((item) => {
-                 tyauArr.push(item);
-             });
-         } else {
-             tyauArr.push(tyau);
-         }
-     } else {
-         log(`\n 【${$.name}】：未填写变量 tyau`)
-         return ;
-     }
- 
+     if (tybody) {
+        if (tybody.indexOf("@") != -1) {
+            tybody.split("@").forEach((item) => {
+                tybodyArr.push(item);
+            });
+        } else if (tybody.indexOf("\n") != -1){
+            tybody.split("\n").forEach((item) => {
+                tybodyArr.push(item);
+            });
+        } else {
+            tybodyArr.push(tybody);
+        }
+    } else {
+        log(`\n 【${$.name}】：未填写变量 tybody`)
+        return ;
+    }
+
      return true;
  }
  
@@ -791,7 +897,7 @@
             return log('读取文件失败！'+err)
         }
         else {
-            var result = dataStr.replace(/regular/g,string);
+            var result = dataStr.replace(/tyau="[\w-\s/+@]{0,1000}"/g,`tyau="${newAuArr[0]}@${newAuArr[1]}@${newAuArr[2]}"`);
             fs.writeFile('/ql/data/config/config.sh', result, 'utf8', function (err) {
                      if (err) {return log(err);}
                 });
