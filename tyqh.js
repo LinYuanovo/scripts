@@ -9,6 +9,7 @@
  定时一天三次，八个小时一次收取冒险奖励
  cron: 10 0/8 * * *
  6-14 更新了AU获取方式，理论上不会过期了
+ 6-18 更新了收取植物、种新的植物和推送加上昵称，方便辨认（可能）
  */
 
  const $ = new Env('统一茄皇');
@@ -31,15 +32,14 @@
  let taskIdArr = [];
  let challengeId = '';
  let adventureId = '';
+ let name = '';
  
  !(async () => {
  
      if (!(await Envs()))
          return;
      else {
- 
 
- 
          log(`\n\n=============================================    \n脚本执行 - 北京时间(UTC+8)：${new Date(
              new Date().getTime() + new Date().getTimezoneOffset() * 60 * 1000 +
              8 * 60 * 60 * 1000).toLocaleString()} \n=============================================\n`);
@@ -65,7 +65,7 @@
  
              msg += `\n第${num}个账号运行结果：`
              
-             log('开始刷新AU');
+             log('开始获取AU');
              await refreshAu();
              await $.wait(2 * 1000);
 
@@ -108,15 +108,15 @@
                  await $.wait(2 * 1000);
     
                  log("开始获取植物Id");
-                 await getPlantId();
+                 await getPlantId(index);
                  await $.wait(2 * 1000);
     
                  log("开始洒阳光");
                  await giveSunshine();
                  await $.wait(2 * 1000);
 
-                 log("开始查询番茄余额");
-                 await getTomato();
+                 log("开始查询信息");
+                 await getUserInfo();
                  await $.wait(2 * 1000);
              }
 
@@ -129,7 +129,7 @@
      .finally(() => $.done())
 
  /**
-  * 刷新AU  
+  * 获取AU
   */
   function refreshAu(num) {
     let url = {
@@ -144,26 +144,26 @@
     return new Promise((resolve) => {
 
         if (debug) {
-            log(`\n【debug】=============== 这是 刷新AU 请求 url ===============`);
+            log(`\n【debug】=============== 这是 获取AU 请求 url ===============`);
             log(JSON.stringify(url));
         }
 
         $.post(url, async (error, response, data) => {
             try {
                 if (debug) {
-                    log(`\n\n【debug】===============这是 刷新AU 返回data==============`);
+                    log(`\n\n【debug】===============这是 获取AU 返回data==============`);
                     log(data)
                 }
 
                 let result = JSON.parse(data);
                 if (result.code == 0) {
 
-                    log(`刷新成功，新的AU为：${result.data}`)
+                    log(`获取AU成功，新的AU为：${result.data}`)
                     tyau = result.data;
 
                 } else {  
 
-                    log(`刷新失败，原因是：${result.message}`)
+                    log(`获取AU失败，原因是：${result.message}`)
 
                 }
 
@@ -347,7 +347,7 @@
  /**
   * 获取植物Id  
   */
-  function getPlantId(timeout = 2*1000) {
+  function getPlantId(num) {
     let url = {
         url : `http://api.xiaoyisz.com/qiehuang/ga/plant/info?userId=-1`,
         headers : {
@@ -373,22 +373,16 @@
 
                 let result = JSON.parse(data);
                 let back = eval(result);
-                if (result.code == 902) {
-
-                    auback = 1;
-                    log(`AU失效，请重抓`)
-                    msg += `\nAU失效，请重抓`
-
-                } else if (auback != 1 && result.code == 0){
+                if (result.code == 0){
                    tyPlantId = result.data.plantId;
-                }
+                } else log(`获取植物Id失败`)
 
             } catch (e) {
                 log(e)
             } finally {
                 resolve();
             }
-        }, timeout)
+        })
     })
  }
 
@@ -633,21 +627,20 @@
 
                 let result = JSON.parse(data);
                 let back = eval(result.data);
-                if (result.code == 902) {
-
-                    auback = 1;
-                    log(`AU失效，请重抓`)
-                    msg += `\nAU失效，请重抓`
-
-                } 
-                if (auback != 1 && result.message != "阳光不足"){
+                if (result.message == "已达到收获阶段") {
+                    log("开始收取植物")
+                    getHarvest();
+                    $.wait(2 * 1000);
+                } else if(result.message == "plantId错误"){
+                    log(`plantId错误，可能是运行的bug，不用管`)
+                } else if (result.message != "阳光不足"){
                     log('洒阳光成功')
                     if (back.currentSunshineNum == back.needSunshineNum){
                         upgrade();
                     }
                     giveSunshine();
                     $.wait(2 * 1000);
-                } else log('洒阳光失败，阳光不足')
+                }
 
             } catch (e) {
                 log(e)
@@ -687,13 +680,6 @@
 
                 let result = JSON.parse(data);
                 let back = eval(result.data);
-                if (result.code == 902) {
-
-                    auback = 1;
-                    log(`AU失效，请重抓`)
-                    msg += `\nAU失效，请重抓`
-
-                } 
                 if (result.code == 0){
                     log('浇水升级成功')
                 }
@@ -737,8 +723,8 @@
                 let result = JSON.parse(data);
                 let back = eval(result.data);
                 if (result.code == 0){
-                    log(`查询成功，番茄余额为：${back.tomatoNum}`)
-                    msg += `查询成功，番茄余额为：${back.tomatoNum}`
+                    log(`查询成功，账号[${name}]番茄余额为：${back.tomatoNum}`)
+                    msg += `账号[${name}]番茄余额为：${back.tomatoNum}`
                 }
 
             } catch (e) {
@@ -792,6 +778,141 @@
         }, timeout)
     })
  }
+
+/**
+ * 收植物
+ */
+function getHarvest(timeout = 2*1000) {
+    let url = {
+        url : `http://api.xiaoyisz.com/qiehuang/ga/plant/harvest?plantId=${tyPlantId}`,
+        headers : {
+            "Host": "api.xiaoyisz.com",
+            "authorization": `${tyau}`,
+            "user-agent": "Mozilla/5.0 (Linux; Android 10; MI 8 Build/QKQ1.190828.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/86.0.4240.99 XWEB/3235 MMWEBSDK/20220204 Mobile Safari/537.36 MMWEBID/6242 MicroMessenger/8.0.20.2080(0x28001435) Process/appbrand0 WeChat/arm64 Weixin NetType/WIFI Language/zh_CN ABI/arm64 miniProgram/wx532ecb3bdaaf92f9",
+            "Content-Type": "application/json",
+        },
+    }
+    return new Promise((resolve) => {
+
+        if (debug) {
+            log(`\n【debug】=============== 这是 收植物 请求 url ===============`);
+            log(JSON.stringify(url));
+        }
+
+        $.get(url, async (error, response, data) => {
+            try {
+                if (debug) {
+                    log(`\n\n【debug】===============这是 收植物 返回data==============`);
+                    log(data)
+                }
+
+                let result = JSON.parse(data);
+                let back = eval(result.data);
+                if (result.code == 0){
+                    log(`植物奖励收取成功，获得${back.infos[0].num}个番茄`)
+                    getNewPlant();
+                } else if (result.code == 1000){
+                    log(`植物奖励已收取`)
+                } else log(`植物奖励收取失败，原因是：${result.message}`)
+
+            } catch (e) {
+                log(e)
+            } finally {
+                resolve();
+            }
+        }, timeout)
+    })
+}
+
+/**
+ * 种植物
+ */
+function getNewPlant(timeout = 2*1000) {
+    let url = {
+        url : `http://api.xiaoyisz.com/qiehuang/ga/plant/start`,
+        headers : {
+            "Host": "api.xiaoyisz.com",
+            "authorization": `${tyau}`,
+            "user-agent": "Mozilla/5.0 (Linux; Android 10; MI 8 Build/QKQ1.190828.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/86.0.4240.99 XWEB/3235 MMWEBSDK/20220204 Mobile Safari/537.36 MMWEBID/6242 MicroMessenger/8.0.20.2080(0x28001435) Process/appbrand0 WeChat/arm64 Weixin NetType/WIFI Language/zh_CN ABI/arm64 miniProgram/wx532ecb3bdaaf92f9",
+            "Content-Type": "application/json",
+        },
+    }
+    return new Promise((resolve) => {
+
+        if (debug) {
+            log(`\n【debug】=============== 这是 种植物 请求 url ===============`);
+            log(JSON.stringify(url));
+        }
+
+        $.get(url, async (error, response, data) => {
+            try {
+                if (debug) {
+                    log(`\n\n【debug】===============这是 种植物 返回data==============`);
+                    log(data)
+                }
+
+                let result = JSON.parse(data);
+                let back = eval(result.data);
+                if (result.code == 0){
+                    log(`种新的植物成功`)
+                    tyPlantId = back.plantId;
+                    giveSunshine();
+                } else if (result.code == 1000){
+                    log(`种失败，原因是：已种植`)
+                } else log(`种新的植物失败，原因是：${result.message}`)
+
+            } catch (e) {
+                log(e)
+            } finally {
+                resolve();
+            }
+        }, timeout)
+    })
+}
+
+/**
+ * 获取信息
+ */
+function getUserInfo(timeout = 2*1000) {
+    let url = {
+        url : `http://api.xiaoyisz.com/qiehuang/ga/user/info?userId=-1`,
+        headers : {
+            "Host": "api.xiaoyisz.com",
+            "authorization": `${tyau}`,
+            "user-agent": "Mozilla/5.0 (Linux; Android 10; MI 8 Build/QKQ1.190828.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/86.0.4240.99 XWEB/3235 MMWEBSDK/20220204 Mobile Safari/537.36 MMWEBID/6242 MicroMessenger/8.0.20.2080(0x28001435) Process/appbrand0 WeChat/arm64 Weixin NetType/WIFI Language/zh_CN ABI/arm64 miniProgram/wx532ecb3bdaaf92f9",
+            "Content-Type": "application/json",
+        },
+    }
+    return new Promise((resolve) => {
+
+        if (debug) {
+            log(`\n【debug】=============== 这是 获取信息 请求 url ===============`);
+            log(JSON.stringify(url));
+        }
+
+        $.get(url, async (error, response, data) => {
+            try {
+                if (debug) {
+                    log(`\n\n【debug】===============这是 获取信息 返回data==============`);
+                    log(data)
+                }
+
+                let result = JSON.parse(data);
+                let back = eval(result.data);
+                if (result.code == 0){
+                    log(`查询昵称成功`);
+                    name = back.nickName;
+                    getTomato();
+                } else log(`获取信息失败，原因是：${result.message}`)
+
+            } catch (e) {
+                log(e)
+            } finally {
+                resolve();
+            }
+        }, timeout)
+    })
+}
 
  // ============================================变量检查============================================ \\
  async function Envs() {
