@@ -47,9 +47,9 @@
      else {
 
  
-         console.log(`\n\n=========================================    \n脚本执行 - 北京时间(UTC+8)：${new Date(
+         console.log(`\n\n=============================================    \n脚本执行 - 北京时间(UTC+8)：${new Date(
              new Date().getTime() + new Date().getTimezoneOffset() * 60 * 1000 +
-             8 * 60 * 60 * 1000).toLocaleString()} \n=========================================\n`);
+             8 * 60 * 60 * 1000).toLocaleString()} \n=============================================\n`);
 
          await poem();
 
@@ -503,7 +503,7 @@ function getNickName(timeout = 2 * 1000) {
  function randomInt(min, max) {
      return Math.round(Math.random() * (max - min) + min)
  }
- 
+
  /**
  * 获取随机诗词
  */
@@ -515,9 +515,9 @@ function poem(timeout = 3 * 1000) {
         $.get(url, async (err, resp, data) => {
             try {
                 data = JSON.parse(data)
-                log(`${data.content}  \n————《${data.origin}》${data.author}`);
+                console.log(`${data.content}  \n————《${data.origin}》${data.author}`);
             } catch (e) {
-                log(e, resp);
+                console.log(e, resp);
             } finally {
                 resolve()
             }
