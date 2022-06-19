@@ -2,7 +2,7 @@
  @ 临渊
  日期：6-12
  小程序：统一快乐星球
- 入口：活动->茄皇
+ 入口：活动->种番茄
  功能：除了助力都能完成
  抓包：api.xiaoyisz.com/qiehuang/ga/public/api/login  这个登录包里 body 部分的 全部
  变量：tybody='body@xxxx '  多个账号用 @ 或者 换行 分割 
@@ -160,6 +160,11 @@
 
                     log(`获取AU成功，新的AU为：${result.data}`)
                     tyau = result.data;
+
+                } else if (result.code == 500) {
+
+                    log(`获取AU失败，请更换到环境变量或者配置文件重试`)
+                    auback = 1;
 
                 } else {  
 
@@ -319,11 +324,11 @@
 
                 let result = JSON.parse(data);
                 let back = eval(result);
-                if (result.code == 902 ||result.code == 903) {
+                if (result.code == 901 ||result.code == 902 ||result.code == 903) {
 
                     auback = 1;
-                    log(`AU失效，请重抓`)
-                    msg += `\nAU失效，请重抓`
+                    log(`AU错误，可能是获取失败，请更换到环境变量或配置文件重试`)
+                    msg += `\nAU错误，可能是获取失败，请更换到环境变量或配置文件重试`
 
                 } 
                 if (auback != 1 && result.code == 0){
