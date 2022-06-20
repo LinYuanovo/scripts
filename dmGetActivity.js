@@ -27,7 +27,7 @@
      else {
  
          console.log(`开始获取活动`);
-         msg+=`作者：临渊\n`
+         
  
          console.log(`\n\n=========================================    \n脚本执行 - 北京时间(UTC+8)：${new Date(
              new Date().getTime() + new Date().getTimezoneOffset() * 60 * 1000 +
@@ -55,6 +55,9 @@
  
              console.log('开始获取活动');
              await signin();
+             if (msg != ""){
+                msg+=`\n作者：临渊`
+             }
              await $.wait(2 * 1000);
          }
          
@@ -62,7 +65,7 @@
      }
  
  })()
-     .catch((e) => console.logErr(e))
+     .catch((e) => console.log(e))
      .finally(() => $.done())
  
  
@@ -73,7 +76,7 @@
  /**
   * 下面我们来看看函数需要注意的东西吧
   */
- function signin(timeout = 3 * 1000) {
+ function signin(timeout = 5 * 1000) {
      return new Promise((resolve) => {
          let url = {
              url: `https://appdmkj.5idream.net/v2/activity/activities`,    
@@ -107,39 +110,39 @@
                  if (result.code == 100) {
                     for(var i=0;i<40;i++){
                         if(obj.list[i].catalog2name == "创新创业"){
-                            if(obj.list[i].status != 6 && obj.list[i].status != 5){
+                            if(obj.list[i].status != 6 && obj.list[i].name.indexOf("补发") == -1){
                                 console.log(`创新创业活动ID为：${obj.list[i].activityId} `)
                                 msg += `\n创新创业活动ID为：${obj.list[i].activityId}`
                                 console.log(`创新创业活动名称为：${obj.list[i].name} `)
                                 msg += `\n创新创业活动名称为：${obj.list[i].name}`
                                 console.log(`创新创业活动时间为：${obj.list[i].activitytime} `)
-                                msg += `\n创新创业活动时间为：${obj.list[i].activitytime}`
+                                msg += `\n创新创业活动名称为：${obj.list[i].activitytime}`
                                 console.log(`创新创业活动状态为：${obj.list[i].statusText} `)
                                 msg += `\n创新创业活动状态为：${obj.list[i].statusText}`
                                 msg +=`\n`
                             }
                         }
                         else if(obj.list[i].catalog2name == "实践实习"){
-                            if(obj.list[i].status != 6 && obj.list[i].status != 5){
+                            if(obj.list[i].status != 6 && obj.list[i].name.indexOf("补发") == -1){
                                 console.log(`实践实习活动ID为：${obj.list[i].activityId} `)
                                 msg += `\n实践实习活动ID为：${obj.list[i].activityId}`
                                 console.log(`实践实习活动名称为：${obj.list[i].name} `)
                                 msg += `\n实践实习活动名称为：${obj.list[i].name}`
                                 console.log(`实践实习活动时间为：${obj.list[i].activitytime} `)
-                                msg += `\n实践实习活动时间为：${obj.list[i].activitytime}`
+                                msg += `\n实践实习活动名称为：${obj.list[i].activitytime}`
                                 console.log(`实践实习活动状态为：${obj.list[i].statusText} `)
                                 msg += `\n实践实习活动状态为：${obj.list[i].statusText}`
                                 msg +=`\n`
                             }
                         }
                         else if(obj.list[i].catalog2name == "志愿公益"){
-                            if(obj.list[i].status != 6){
+                            if(obj.list[i].status != 6 && obj.list[i].name.indexOf("补发") == -1){
                                 console.log(`志愿公益活动ID为：${obj.list[i].activityId} `)
                                 msg += `\n志愿公益活动ID为：${obj.list[i].activityId}`
                                 console.log(`志愿公益活动名称为：${obj.list[i].name} `)
                                 msg += `\n志愿公益活动名称为：${obj.list[i].name}`
                                 console.log(`志愿公益活动时间为：${obj.list[i].activitytime} `)
-                                msg += `\n志愿公益活动时间为：${obj.list[i].activitytime}`
+                                msg += `\n志愿公益活动名称为：${obj.list[i].activitytime}`
                                 console.log(`志愿公益活动状态为：${obj.list[i].statusText} `)
                                 msg += `\n志愿公益活动状态为：${obj.list[i].statusText}`
                                 msg +=`\n`
