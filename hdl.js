@@ -3,7 +3,7 @@
  日期：6-21
  小程序：海底捞（活动入口：首页->每日签到）
  功能：签到（积分可以兑换菜品、火锅）
- 抓包：superapp-public.kiwa-tech.com 此域名下的任意 _haidilao_app_token
+ 抓包：superapp-public.kiwa-tech.com 此域名下的任意 _haidilao_app_token （TK有效期未知）
  示例：TOKEN_APP_xx-xx-xx-xx-xx
  变量格式：export hdlTk='xxx@xxx '  多个账号用@或者换行分割
  定时：一天一次
