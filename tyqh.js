@@ -20,9 +20,8 @@
  const debug = 1; //0为关闭调试，1为打开调试,默认为0
  //////////////////////
  let tyau = '';
- // let tybody = process.env.tybody;
+ let tybody = process.env.tybody;
  let tybodyArr = [];
- let tybody = '{"appId":"wx532ecb3bdaaf92f9","openId":"oBk224v2UtJ2aoxN6jG-IZ--32KE","wid":3149740686,"signature":"4B5CB23F51F78CED59A780C71A5F3238"}@{"appId":"wx532ecb3bdaaf92f9","openId":"oBk224t-T2HejDorUbmCLpQd8oWo","wid":3149752393,"signature":"8798EFA790C241C3E3DADBDF6D2E86D7"}@{"appId":"wx532ecb3bdaaf92f9","openId":"oBk224qTTbJZfikl1w7SRj7yBe1Y","wid":3149749552,"signature":"503AD08EBED103D3F234BA6103BF1332"}';
  let newAuArr = [];
  let tyPlantId = '';
  let plantIdArr = [];
