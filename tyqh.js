@@ -708,6 +708,9 @@
                     log(`plantId错误，可能是运行的bug，不用管`)
                 } else if(result.message == "只能给自己批量洒阳光") {
                     log("只能给自己批量洒阳光")
+                } else if (result.message == "阳光不足") {
+                    log("阳光不足")
+                    giveSunshineBack = 0;
                 } else if (result.message != "阳光不足"){
                     log('洒阳光成功')
                     if (back.currentSunshineNum == back.needSunshineNum){
