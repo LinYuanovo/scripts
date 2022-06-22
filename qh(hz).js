@@ -483,7 +483,7 @@ function reportCallenge(timeout = 2*1000) {
             "user-agent": "Mozilla/5.0 (Linux; Android 10; MI 8 Build/QKQ1.190828.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/86.0.4240.99 XWEB/3235 MMWEBSDK/20220204 Mobile Safari/537.36 MMWEBID/6242 MicroMessenger/8.0.20.2080(0x28001435) Process/appbrand0 WeChat/arm64 Weixin NetType/WIFI Language/zh_CN ABI/arm64 miniProgram/wx532ecb3bdaaf92f9",
             "Content-Type": "application/json",
         },
-        body : `{"battleId":${challengeId},"result":1,"costMillisecond":3022}`
+        body : `{"battleId":${challengeId},"result":1,"costMillisecond":${randomInt(6500,13000)}}`
     }
     return new Promise((resolve) => {
 
