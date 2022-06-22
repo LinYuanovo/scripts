@@ -708,8 +708,8 @@
                     if (back.currentSunshineNum == back.needSunshineNum){
                         upgrade();
                     }
+                    $.wait(3 * 1000);
                     giveSunshine();
-                    $.wait(2 * 1000);
                 }
 
             } catch (e) {
