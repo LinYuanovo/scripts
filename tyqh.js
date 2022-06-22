@@ -1,5 +1,5 @@
 /**
- @ 临渊
+ 作者：临渊
  日期：6-12
  小程序：统一快乐星球
  入口：活动->种番茄
@@ -10,6 +10,7 @@
  cron: 10 0/8 * * *
  6-14 更新了AU获取方式，理论上不会过期了
  6-18 更新了收取植物、种新的植物和推送加上昵称，方便辨认（可能）
+ 6-22 更新了助力、助力洒阳光以及种植进度（免得老有人说脚本坏了）
  */
 
  const $ = new Env('统一茄皇');
@@ -19,10 +20,12 @@
  const debug = 0; //0为关闭调试，1为打开调试,默认为0
  //////////////////////
  let tyau = '';
- let tybody = process.env.tybody;
+ // let tybody = process.env.tybody;
  let tybodyArr = [];
+ let tybody = '{"appId":"wx532ecb3bdaaf92f9","openId":"oBk224oYArBvO0ATHxPlv0ycmvEI","wid":3118552467,"signature":"83CA119BD5A1EEE0535A396E459F8B05"}@{"appId":"wx532ecb3bdaaf92f9","openId":"oBk224nTkfvBsXnqZ8teNMLzNUcw","wid":3140697478,"signature":"33E15342EE6802760B735237A213B640"}@{"appId":"wx532ecb3bdaaf92f9","openId":"oBk224nfK-iuEamzj6amvksQJ-pE","wid":3140960455,"signature":"001206AFE85A0B94A7690929A3C9BA66"}';
  let newAuArr = [];
  let tyPlantId = '';
+ let plantIdArr = [];
  let auback = 0;
  let data = '';
  let msg = '';
@@ -33,6 +36,13 @@
  let challengeId = '';
  let adventureId = '';
  let name = '';
+ let id = '';
+ let idArr = [];
+ let progress = 0.00;
+ let plantStage = 0;
+ let plantStatus = '';
+ let helpTaskId = '';
+ let helpTaskIdArr = [];
  
  !(async () => {
  
@@ -51,7 +61,7 @@
          if (debug) {
              log(`【debug】 这是你的全部账号数组:\n ${tybodyArr}`);
          }
- 
+
          for (let index = 0; index < tybodyArr.length; index++) {
             
              tybody = tybodyArr[index];
@@ -64,19 +74,21 @@
              }
  
              msg += `\n第${num}个账号运行结果：`
-             
+
              log('开始获取AU');
              await refreshAu();
              await $.wait(2 * 1000);
+             newAuArr[index] = tyau;
 
              log('开始查询任务');
              await getTask();
              await $.wait(2 * 1000);
+             helpTaskIdArr[index] = helpTaskId;
 
              if (auback != 1){
 
-                 for (let i=0;i<10;i++){
-                    log(`\n开始上报第${i+1}个任务`);
+                 for (let i=1;i<10;i++){
+                    log(`开始上报第${i+1}个任务`);
                     await report(i);
                     if (i == 2){
                         await report(i);
@@ -86,7 +98,7 @@
                     }
                     await $.wait(2 * 1000);
     
-                    log(`\n开始领取第${i+1}个任务奖励`);
+                    log(`开始领取第${i+1}个任务奖励`);
                     await getDrawPriz(i);
                     await $.wait(2 * 1000);
                  }
@@ -107,10 +119,11 @@
                  await startAdventure();
                  await $.wait(2 * 1000);
     
-                 log("开始获取植物Id");
-                 await getPlantId(index);
+                 log("开始获取植物详情");
+                 await getPlant(index);
                  await $.wait(2 * 1000);
-    
+                 plantIdArr[index] = tyPlantId;
+
                  log("开始洒阳光");
                  await giveSunshine();
                  await $.wait(2 * 1000);
@@ -118,8 +131,20 @@
                  log("开始查询信息");
                  await getUserInfo();
                  await $.wait(2 * 1000);
+                 idArr[index] = id;
              }
 
+         }
+         log(`开始互助`);
+         for (let num1 = 0; num1 < tybodyArr.length; num1++) {
+             for(num2 =0;num2<tybodyArr.length;num2++){
+                 if(num1 != num2){
+                     await doHelp(num1,num2);
+                     await $.wait(2 * 1000);
+                     await doHelpGiveSunshine(num1,num2);
+                     await $.wait(2 * 1000);
+                 }
+             }
          }
          await SendMsg(msg);
      }
@@ -158,12 +183,12 @@
                 let result = JSON.parse(data);
                 if (result.code == 0) {
 
-                    log(`获取AU成功，新的AU为：${result.data}`)
+                    log(`获取AU成功`)
                     tyau = result.data;
 
                 } else if (result.code == 500) {
 
-                    log(`获取AU失败，请更换到环境变量或者配置文件重试`)
+                    log(`获取AU失败，请检查你的变量是否正确，如正确更换到环境变量或者配置文件重试`)
                     auback = 1;
 
                 } else {  
@@ -333,6 +358,9 @@
                 } 
                 if (auback != 1 && result.code == 0){
                     for (let i=0;i<10;i++) {
+                        if (i == 0) {
+                            helpTaskId = back.data[i].taskId;
+                        }
                         taskType = back.data[i].taskType;
                         taskTypeArr[i] = taskType;
                         taskId = back.data[i].taskId;
@@ -350,9 +378,9 @@
  }
 
  /**
-  * 获取植物Id  
+  * 获取植物详情
   */
-  function getPlantId(num) {
+  function getPlant(num) {
     let url = {
         url : `http://api.xiaoyisz.com/qiehuang/ga/plant/info?userId=-1`,
         headers : {
@@ -365,14 +393,14 @@
     return new Promise((resolve) => {
 
         if (debug) {
-            log(`\n【debug】=============== 这是 获取植物Id 请求 url ===============`);
+            log(`\n【debug】=============== 这是 获取植物详情 请求 url ===============`);
             log(JSON.stringify(url));
         }
 
         $.get(url, async (error, response, data) => {
             try {
                 if (debug) {
-                    log(`\n\n【debug】===============这是 获取植物Id 返回data==============`);
+                    log(`\n\n【debug】===============这是 获取植物详情 返回data==============`);
                     log(data)
                 }
 
@@ -380,7 +408,11 @@
                 let back = eval(result);
                 if (result.code == 0){
                    tyPlantId = result.data.plantId;
-                } else log(`获取植物Id失败`)
+                   progress =+ result.data.currentSunshineNum/result.data.needSunshineNum;
+                   progress = progress*100;
+                   progress = progress.toFixed(2);
+                   plantStage =+ result.data.stage;
+                } else log(`获取植物详情失败`)
 
             } catch (e) {
                 log(e)
@@ -728,8 +760,17 @@
                 let result = JSON.parse(data);
                 let back = eval(result.data);
                 if (result.code == 0){
-                    log(`查询成功，账号[${name}]番茄余额为：${back.tomatoNum}`)
-                    msg += `账号[${name}]番茄余额为：${back.tomatoNum}`
+                    if (plantStage == 0) {
+                        plantStatus = '发育期';
+                    } else if (plantStage == 1) {
+                        plantStatus = '幼苗期';
+                    } else if (plantStage == 2) {
+                        plantStatus = '开花期';
+                    } else if (plantStage == 3) {
+                        plantStatus = '结果期';
+                    }
+                    log(`查询成功，账号[${name}]番茄余额为：${back.tomatoNum}，植物状态为：${plantStatus}，进度：${progress}%`)
+                    msg += `\n账号[${name}]番茄余额为：${back.tomatoNum}，植物状态为：${plantStatus}，进度：${progress}%`
                 }
 
             } catch (e) {
@@ -772,7 +813,7 @@
                 if (result.code == 0){
                     log('收取阳光成功')
                 } else if (result.code == 1000){
-                    log('收取阳光失败')
+                    log('收取阳光失败，无可收取的阳光')
                 } else log(`收取失败，原因是：${result.message}`)
 
             } catch (e) {
@@ -907,6 +948,7 @@ function getUserInfo(timeout = 2*1000) {
                 if (result.code == 0){
                     log(`查询昵称成功`);
                     name = back.nickName;
+                    id = back.id;
                     getTomato();
                 } else log(`获取信息失败，原因是：${result.message}`)
 
@@ -919,6 +961,111 @@ function getUserInfo(timeout = 2*1000) {
     })
 }
 
+/**
+ * 互助 （num1助力num2）
+ */
+function doHelp(num1,num2) {
+    let url = {
+        url : `http://api.xiaoyisz.com/qiehuang/ga/user/task/report?taskType=${taskTypeArr[0]}&attachId=${idArr[num2]}&taskId=${helpTaskIdArr[num1]}`,
+        headers : {
+            "Host": "api.xiaoyisz.com",
+            "authorization": `${newAuArr[num1]}`,
+            "user-agent": "Mozilla/5.0 (Linux; Android 10; MI 8 Build/QKQ1.190828.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/86.0.4240.99 XWEB/3235 MMWEBSDK/20220204 Mobile Safari/537.36 MMWEBID/6242 MicroMessenger/8.0.20.2080(0x28001435) Process/appbrand0 WeChat/arm64 Weixin NetType/WIFI Language/zh_CN ABI/arm64 miniProgram/wx532ecb3bdaaf92f9",
+            "content-type": "application/json"
+        },
+    }
+    return new Promise((resolve) => {
+
+        if (debug) {
+            log(`\n【debug】=============== 这是 互助 请求 url ===============`);
+            log(JSON.stringify(url));
+        }
+
+        $.get(url, async (error, response, data) => {
+            try {
+                if (debug) {
+                    log(`\n\n【debug】===============这是 互助 返回data==============`);
+                    log(data)
+                }
+
+                let result = JSON.parse(data);
+                if (result.data.status == 1) {
+
+                    log(`去助力[${result.data.nickName}]成功`)
+
+                } else if (result.data.status == 3) {
+
+                    log(`助力失败，可能是已经完成`)
+
+                } else if (result.data.status == 2) {
+
+                    log(`助力失败，该用户被助力次数已达上限`)
+
+                } else {
+
+                    log(`助力失败，原因是：${result.message}`)
+
+                }
+
+            } catch (e) {
+                log(e)
+            } finally {
+                resolve();
+            }
+        })
+    })
+}
+
+/**
+ * 互助洒阳光 （num1助力num2）
+ */
+function doHelpGiveSunshine(num1,num2) {
+    let url = {
+        url : `https://api.xiaoyisz.com/qiehuang/ga/plant/giveSunshine?plantId=${plantIdArr[num2]}`,
+        headers : {
+            "Host": "api.xiaoyisz.com",
+            "authorization": `${newAuArr[num1]}`,
+            "user-agent": "Mozilla/5.0 (Linux; Android 10; MI 8 Build/QKQ1.190828.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/86.0.4240.99 XWEB/3235 MMWEBSDK/20220204 Mobile Safari/537.36 MMWEBID/6242 MicroMessenger/8.0.20.2080(0x28001435) Process/appbrand0 WeChat/arm64 Weixin NetType/WIFI Language/zh_CN ABI/arm64 miniProgram/wx532ecb3bdaaf92f9",
+            "content-type": "application/json"
+        },
+    }
+    return new Promise((resolve) => {
+
+        if (debug) {
+            log(`\n【debug】=============== 这是 互助洒阳光 请求 url ===============`);
+            log(JSON.stringify(url));
+        }
+
+        $.get(url, async (error, response, data) => {
+            try {
+                if (debug) {
+                    log(`\n\n【debug】===============这是 互助洒阳光 返回data==============`);
+                    log(data)
+                }
+
+                let result = JSON.parse(data);
+                if (result.code == 0) {
+
+                    log(`助力洒阳光成功`)
+
+                } else if (result.code == 1000) {
+
+                    log(`助力洒阳光失败，今日已达上限`)
+
+                } else {
+
+                    log(`助力洒阳光失败，原因是：${result.message}`)
+
+                }
+
+            } catch (e) {
+                log(e)
+            } finally {
+                resolve();
+            }
+        })
+    })
+}
  // ============================================变量检查============================================ \\
  async function Envs() {
      if (tybody) {
