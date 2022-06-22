@@ -18,7 +18,7 @@ const notify = $.isNode() ? require('./sendNotify') : '';
 const {log} = console;
 const Notify = 1; //0为关闭通知，1为打开通知,默认为1
 const debug = 0; //0为关闭调试，1为打开调试,默认为0
-const help = 1; //0为关闭互助，1为打开互助,默认为0
+const help = 1; //0为关闭互助，1为打开互助,默认为1
 //////////////////////
 let tyau = '';
 let tybody = process.env.tybody;
