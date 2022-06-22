@@ -86,7 +86,7 @@
              helpTaskIdArr[index] = helpTaskId;
 
              if (auback != 1){
-/*
+
                  for (let i=0;i<10;i++){
                     log(`开始上报第${i+1}个任务`);
                     await report(i);
@@ -106,7 +106,7 @@
                  log('开始收取阳光');
                  await getSunshine();
                  await $.wait(2 * 1000);
-*/
+
                  log("开始进行挑战");
                  await startCallenge();
                  await $.wait(2 * 1000);
