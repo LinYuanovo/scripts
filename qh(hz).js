@@ -23,7 +23,6 @@ const help = 1; //0为关闭互助，1为打开互助,默认为1
 let tyau = '';
 let tybody = process.env.tybody;
 let tybodyArr = [];
-// let tybody = '{"appId":"wx532ecb3bdaaf92f9","openId":"oBk224oYArBvO0ATHxPlv0ycmvEI","wid":3118552467,"signature":"83CA119BD5A1EEE0535A396E459F8B05"}@{"appId":"wx532ecb3bdaaf92f9","openId":"oBk224nTkfvBsXnqZ8teNMLzNUcw","wid":3140697478,"signature":"33E15342EE6802760B735237A213B640"}@{"appId":"wx532ecb3bdaaf92f9","openId":"oBk224nfK-iuEamzj6amvksQJ-pE","wid":3140960455,"signature":"001206AFE85A0B94A7690929A3C9BA66"}';
 let newAuArr = [];
 let tyPlantId = '';
 let plantIdArr = [];
