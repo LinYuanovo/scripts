@@ -10,7 +10,7 @@
  cron: 10 0/8 * * *
  6-14 更新了AU获取方式，理论上不会过期了
  6-18 更新了收取植物、种新的植物和推送加上昵称，方便辨认（可能）
- 6-22 更新了种植进度（免得老有人说脚本坏了）
+ 6-22 修复了洒阳光失败，更新了种植进度（免得老有人说脚本坏了）
  */
 
  const $ = new Env('统一茄皇');
@@ -42,6 +42,7 @@
  let plantStatus = '';
  let helpTaskId = '';
  let helpTaskIdArr = [];
+ let giveSunshineBack = 0;
  
  !(async () => {
  
@@ -124,8 +125,10 @@
                  plantIdArr[index] = tyPlantId;
 
                  log("开始洒阳光");
-                 await giveSunshine();
-                 await $.wait(2 * 1000);
+                 do {
+                     await giveSunshine();
+                     await $.wait(2 * 1000);
+                 } while (giveSunshineBack == 1);
 
                  log("开始查询信息");
                  await getUserInfo();
@@ -699,17 +702,19 @@
                 }
                 if (result.message == "已达到收获阶段") {
                     log("开始收取植物")
-                    getHarvest();
                     $.wait(2 * 1000);
+                    getHarvest();
                 } else if(result.message == "plantId错误"){
                     log(`plantId错误，可能是运行的bug，不用管`)
+                } else if(result.message == "只能给自己批量洒阳光") {
+                    log("只能给自己批量洒阳光")
                 } else if (result.message != "阳光不足"){
                     log('洒阳光成功')
                     if (back.currentSunshineNum == back.needSunshineNum){
+                        $.wait(3 * 1000);
                         upgrade();
                     }
-                    $.wait(3 * 1000);
-                    giveSunshine();
+                    giveSunshineBack = 1;
                 }
 
             } catch (e) {
