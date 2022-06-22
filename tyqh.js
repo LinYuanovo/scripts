@@ -10,7 +10,7 @@
  cron: 10 0/8 * * *
  6-14 更新了AU获取方式，理论上不会过期了
  6-18 更新了收取植物、种新的植物和推送加上昵称，方便辨认（可能）
- 6-22 更新了助力、助力洒阳光以及种植进度（免得老有人说脚本坏了）
+ 6-22 更新了种植进度（免得老有人说脚本坏了）
  */
 
  const $ = new Env('统一茄皇');
@@ -133,17 +133,6 @@
                  idArr[index] = id;
              }
 
-         }
-         log(`开始互助`);
-         for (let num1 = 0; num1 < tybodyArr.length; num1++) {
-             for(num2 =0;num2<tybodyArr.length;num2++){
-                 if(num1 != num2){
-                     await doHelp(num1,num2);
-                     await $.wait(2 * 1000);
-                     await doHelpGiveSunshine(num1,num2);
-                     await $.wait(2 * 1000);
-                 }
-             }
          }
          await SendMsg(msg);
      }
@@ -1069,7 +1058,7 @@ function doHelp(num1,num2) {
 
                 } else if (result.data.status == 3) {
 
-                    log(`助力失败，可能是已经完成`)
+                    log(`助力失败，可能是已助力过`)
 
                 } else if (result.data.status == 2) {
 
