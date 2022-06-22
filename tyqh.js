@@ -155,7 +155,7 @@
  /**
   * 获取AU
   */
-  function refreshAu(num) {
+  function refreshAu(timeout = 2*1000) {
     let url = {
        url : `http://api.xiaoyisz.com/qiehuang/ga/public/api/login`,
        headers : {
@@ -201,7 +201,7 @@
             } finally {
                 resolve();
             }
-        })
+        },timeout )
     })
 }
 
@@ -233,6 +233,11 @@
                  }
  
                  let result = JSON.parse(data);
+                 if (result.code == 904) {
+
+                     refreshAu();
+
+                 }
                  if (result.code == 902) {
 
                      auback = 1;
@@ -290,6 +295,11 @@
                 }
 
                 let result = JSON.parse(data);
+                if (result.code == 904) {
+
+                    refreshAu();
+
+                }
                 if (result.code == 902) {
 
                     auback = 1;
@@ -405,6 +415,11 @@
 
                 let result = JSON.parse(data);
                 let back = eval(result);
+                if (result.code == 904) {
+
+                    refreshAu();
+
+                }
                 if (result.code == 0){
                    tyPlantId = result.data.plantId;
                    progress =+ result.data.currentSunshineNum/result.data.needSunshineNum;
@@ -450,6 +465,11 @@
                 }
 
                 let result = JSON.parse(data);
+                if (result.code == 904) {
+
+                    refreshAu();
+
+                }
                 if (auback != 1 && result.code == 0){
                     challengeId = result.data;
                     reportCallenge();
@@ -495,6 +515,11 @@
 
                 let result = JSON.parse(data);
                 let back = eval(result.data);
+                if (result.code == 904) {
+
+                    refreshAu();
+
+                }
                 if (auback != 1 && result.code == 0){
                     log(`挑战成功`)
                     startCallenge();
@@ -537,6 +562,11 @@
                 }
 
                 let result = JSON.parse(data);
+                if (result.code == 904) {
+
+                    refreshAu();
+
+                }
                 if (result.code == 0){
                     log('冒险开始成功')
                 } else log('上一次冒险还未结束')
@@ -578,6 +608,11 @@
                 }
 
                 let result = JSON.parse(data);
+                if (result.code == 904) {
+
+                    refreshAu();
+
+                }
                 if (result.code == 0){
                     adventureId = result.data.adventureId;
                     reportAdventure();
@@ -621,6 +656,11 @@
 
                 let result = JSON.parse(data);
                 let back = eval(result.data);
+                if (result.code == 904) {
+
+                    refreshAu();
+
+                }
                 if (result.code == 0){
                     log(`冒险收取成功`)
                 } else log('冒险未到时间')
@@ -663,6 +703,11 @@
 
                 let result = JSON.parse(data);
                 let back = eval(result.data);
+                if (result.code == 904) {
+
+                    refreshAu();
+
+                }
                 if (result.message == "已达到收获阶段") {
                     log("开始收取植物")
                     getHarvest();
@@ -716,6 +761,11 @@
 
                 let result = JSON.parse(data);
                 let back = eval(result.data);
+                if (result.code == 904) {
+
+                    refreshAu();
+
+                }
                 if (result.code == 0){
                     log('浇水升级成功')
                 }
@@ -758,6 +808,11 @@
 
                 let result = JSON.parse(data);
                 let back = eval(result.data);
+                if (result.code == 904) {
+
+                    refreshAu();
+
+                }
                 if (result.code == 0){
                     if (plantStage == 0) {
                         plantStatus = '发育期';
@@ -809,6 +864,11 @@
                 }
 
                 let result = JSON.parse(data);
+                if (result.code == 904) {
+
+                    refreshAu();
+
+                }
                 if (result.code == 0){
                     log('收取阳光成功')
                 } else if (result.code == 1000){
@@ -853,6 +913,11 @@ function getHarvest(timeout = 2*1000) {
 
                 let result = JSON.parse(data);
                 let back = eval(result.data);
+                if (result.code == 904) {
+
+                    refreshAu();
+
+                }
                 if (result.code == 0){
                     log(`植物奖励收取成功，获得${back.infos[0].num}个番茄`)
                     getNewPlant();
@@ -898,6 +963,11 @@ function getNewPlant(timeout = 2*1000) {
 
                 let result = JSON.parse(data);
                 let back = eval(result.data);
+                if (result.code == 904) {
+
+                    refreshAu();
+
+                }
                 if (result.code == 0){
                     log(`种新的植物成功`)
                     tyPlantId = back.plantId;
@@ -944,6 +1014,11 @@ function getUserInfo(timeout = 2*1000) {
 
                 let result = JSON.parse(data);
                 let back = eval(result.data);
+                if (result.code == 904) {
+
+                    refreshAu();
+
+                }
                 if (result.code == 0){
                     log(`查询昵称成功`);
                     name = back.nickName;
