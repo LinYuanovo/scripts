@@ -87,7 +87,7 @@
 
              if (auback != 1){
 /*
-                 for (let i=1;i<10;i++){
+                 for (let i=0;i<10;i++){
                     log(`开始上报第${i+1}个任务`);
                     await report(i);
                     if (i == 2){
