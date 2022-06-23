@@ -98,6 +98,7 @@
              log(`开始互助`);
              for (let num1 = 0; num1 < tybodyArr.length; num1++) {
                  msg += `\n第${num1+1}个账号去助力结果：`
+                 log(`第${num1+1}个账号去助力结果：`)
                  for(num2 =0;num2<tybodyArr.length;num2++){
                      if(num1 != num2){
                          await doHelp(num1,num2);
@@ -106,6 +107,7 @@
                          await $.wait(2 * 1000);
                      }
                  }
+                 log("")
                  msg += `\n`
              }
          }
