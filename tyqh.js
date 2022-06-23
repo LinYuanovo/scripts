@@ -412,6 +412,10 @@
                     refreshAu();
 
                 }
+                if (result.data.stage == -1) {
+                    await $.wait(2 * 1000);
+                    getNewPlant();
+                }
                 if (result.code == 0){
                    tyPlantId = result.data.plantId;
                    progress =+ result.data.currentSunshineNum/result.data.needSunshineNum;
