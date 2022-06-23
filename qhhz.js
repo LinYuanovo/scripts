@@ -5,7 +5,7 @@
  入口：活动->种番茄
  功能：互助
  抓包：api.xiaoyisz.com/qiehuang/ga/public/api/login  这个登录包里 body 部分的 全部
- 变量：tybody='body@xxxx '  多个账号用 @ 或者 换行 分割
+ 变量：tyhz='body@xxxx '  多个账号用 @ 或者 换行 分割
  定时一天两到三次，多跑一下防止助力不成功
  cron: 5 10,11,12 * * *
 
@@ -23,8 +23,8 @@
  const help = 1; //0为关闭互助，1为打开互助,默认为0
  //////////////////////
  let tyau = '';
- let tybody = process.env.tybody;
- let tybodyArr = [];
+ let tyhz = process.env.tyhz;
+ let tyhzArr = [];
  let newAuArr = [];
  let tyPlantId = '';
  let plantIdArr = [];
@@ -59,21 +59,21 @@
  
          await poem();
  
-         log(`\n=================== 共找到 ${tybodyArr.length} 个账号 ===================`)
+         log(`\n=================== 共找到 ${tyhzArr.length} 个账号 ===================`)
  
          if (debug) {
-             log(`【debug】 这是你的全部账号数组:\n ${tybodyArr}`);
+             log(`【debug】 这是你的全部账号数组:\n ${tyhzArr}`);
          }
  
-         for (let index = 0; index < tybodyArr.length; index++) {
+         for (let index = 0; index < tyhzArr.length; index++) {
  
-             tybody = tybodyArr[index];
+             tyhz = tyhzArr[index];
              let num = index + 1
  
              log(`\n========= 开始【第 ${num} 个账号】=========\n`)
  
              if (debug) {
-                 log(`【debug】 这是你的第 ${num} 个账号数组:\n ${tybody}`);
+                 log(`【debug】 这是你的第 ${num} 个账号数组:\n ${tyhz}`);
              }
 
              log('开始获取AU');
@@ -96,10 +96,10 @@
          }
          if (help) {
              log(`开始互助`);
-             for (let num1 = 0; num1 < tybodyArr.length; num1++) {
+             for (let num1 = 0; num1 < tyhzArr.length; num1++) {
                  msg += `\n第${num1+1}个账号去助力结果：`
                  log(`第${num1+1}个账号去助力结果：`)
-                 for(num2 =0;num2<tybodyArr.length;num2++){
+                 for(num2 =0;num2<tyhzArr.length;num2++){
                      if(num1 != num2){
                          await doHelp(num1,num2);
                          await $.wait(2 * 1000);
@@ -129,7 +129,7 @@
              "user-agent": "Mozilla/5.0 (Linux; Android 10; MI 8 Build/QKQ1.190828.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/86.0.4240.99 XWEB/3235 MMWEBSDK/20220204 Mobile Safari/537.36 MMWEBID/6242 MicroMessenger/8.0.20.2080(0x28001435) Process/appbrand0 WeChat/arm64 Weixin NetType/WIFI Language/zh_CN ABI/arm64 miniProgram/wx532ecb3bdaaf92f9",
              "Content-Type": "application/json"
          },
-         body : `${tybody}`
+         body : `${tyhz}`
      }
      return new Promise((resolve) => {
  
@@ -485,20 +485,20 @@
  }
  // ============================================变量检查============================================ \\
  async function Envs() {
-     if (tybody) {
-         if (tybody.indexOf("@") != -1) {
-             tybody.split("@").forEach((item) => {
-                 tybodyArr.push(item);
+     if (tyhz) {
+         if (tyhz.indexOf("@") != -1) {
+             tyhz.split("@").forEach((item) => {
+                 tyhzArr.push(item);
              });
-         } else if (tybody.indexOf("\n") != -1){
-             tybody.split("\n").forEach((item) => {
-                 tybodyArr.push(item);
+         } else if (tyhz.indexOf("\n") != -1){
+             tyhz.split("\n").forEach((item) => {
+                 tyhzArr.push(item);
              });
          } else {
-             tybodyArr.push(tybody);
+             tyhzArr.push(tyhz);
          }
      } else {
-         log(`\n 【${$.name}】：未填写变量 tybody`)
+         log(`\n 【${$.name}】：未填写变量 tyhz`)
          return ;
      }
  
