@@ -7,6 +7,15 @@
  变量格式：export ddgyCk='xxx@xxx '  多个账号用@或者换行分割
  定时：一天五次
  cron：15 8,10,12,18,20 * * *
+
+ [task_local]
+ #抖抖果园
+ 15 8,10,12,18,20 * * * https://raw.githubusercontent.com/LinYuanovo/scripts/main/dygy.js, tag=抖音果园, enabled=true
+ [rewrite_local]
+ https://minigame.zijieapi.com/ttgame/game_orchard_ecom/polling_info url script-request-header https://raw.githubusercontent.com/LinYuanovo/scripts/main/dygy.js
+ [MITM]
+ hostname = minigame.zijieapi.com
+
  */
 
  const $ = new Env('抖抖果园');
@@ -15,7 +24,8 @@
  const Notify = 1; //0为关闭通知，1为打开通知,默认为1
  const debug = 0; //0为关闭调试，1为打开调试,默认为0
  //////////////////////
- let ddgyCk = process.env.ddgyCk;
+ let ddgyCk = ($.isNode() ? process.env.ddgyCk : $.getdata("ddgyCk")) || "";
+ let ck;
  let ddgyCkArr = [];
  let msg = '';
  let boxTimes = 0;
@@ -23,121 +33,143 @@
  let challengeTimes = 0;
  let challengeState = 0;
  let waterBack = 0;
- let nutrientBack = 0;
+ let nutrientSignDay = 0;
  let liteFertilizerType = 0;
  let normalFertilizerType = 0;
  let progress = 0.00;
  let hour = parseInt(new Date().getHours());
  let touchDuckBack = 0;
+ let giftBack = 0;
+ let challengeBack = 0;
+ let boxBack = 0;
+ let nutrientBack = 0;
  
  !(async () => {
- 
-     if (!(await Envs()))
-         return;
-     else {
- 
+     if (typeof $request !== "undefined") {
+         // 严格不相等
+         await GetRewrite();
+     } else {
+         if (!(await Envs()))
+             return;
+         else {
 
- 
-         log(`\n\n=============================================    \n脚本执行 - 北京时间(UTC+8)：${new Date(
-             new Date().getTime() + new Date().getTimezoneOffset() * 60 * 1000 +
-             8 * 60 * 60 * 1000).toLocaleString()} \n=============================================\n`);
 
-         await poem();
-        
-         log(`\n=================== 共找到 ${ddgyCkArr.length} 个账号 ===================`)
- 
-         if (debug) {
-             log(`【debug】 这是你的全部账号数组:\n ${ddgyCkArr}`);
-         }
- 
- 
-         for (let index = 0; index < ddgyCkArr.length; index++) {
- 
- 
-             let num = index + 1
-             log(`\n========= 开始【第 ${num} 个账号】=========\n`)
- 
-             ddgyCk = ddgyCkArr[index];
- 
+
+             log(`\n\n=============================================    \n脚本执行 - 北京时间(UTC+8)：${new Date(
+                 new Date().getTime() + new Date().getTimezoneOffset() * 60 * 1000 +
+                 8 * 60 * 60 * 1000).toLocaleString()} \n=============================================\n`);
+
+             await poem();
+
+             log(`\n=================== 共找到 ${ddgyCkArr.length} 个账号 ===================`)
+
              if (debug) {
-                 log(`\n 【debug】 这是你第 ${num} 账号信息:\n ${ddgyCk}\n`);
+                 log(`【debug】 这是你的全部账号数组:\n ${ddgyCkArr}`);
              }
 
-             msg += `\n第${num}个账号运行结果：`
 
-             log('开始签到');
-             await doSignin();
-             await $.wait(2 * 1000);
+             for (let index = 0; index < ddgyCkArr.length; index++) {
 
-             log('开始收取水瓶奖励');
-             await getBottle();
-             await $.wait(2 * 1000);
 
-             log('开始领取每日水滴');
-             await getTask1();
-             await $.wait(2 * 1000);
+                 let num = index + 1
+                 log(`\n========= 开始【第 ${num} 个账号】=========\n`)
 
-             log('开始戳鸭子');
-             do {
-                 await touchDuck();
+                 ddgyCk = ddgyCkArr[index];
+
+                 if (debug) {
+                     log(`\n 【debug】 这是你第 ${num} 账号信息:\n ${ddgyCk}\n`);
+                 }
+
+                 msg += `\n第${num}个账号运行结果：`
+
+                 log('开始获取信息');
+                 await getInfo();
                  await $.wait(2 * 1000);
-             } while (touchDuckBack);
 
-             if (hour >=7 && hour <9) {
-                 log('开始领取早餐礼包');
-                 await getTask2();
-                 await $.wait(2 * 1000);
-             } else if (hour >=12 && hour<14) {
-                 log('开始领取午餐礼包');
-                 await getTask2();
-                 await $.wait(2 * 1000);
-             } else if (hour >=18 && hour <21) {
-                 log('开始领取晚餐礼包');
-                 await getTask2();
-                 await $.wait(2 * 1000);
-             }
-
-             log('开始选择挑战');
-             await chooseChallenge();
-             await $.wait(2 * 1000);
-
-             log('开始肥料签到');
-             await nutrientSignin();
-             await $.wait(2 * 1000);
-
-             log('开始获取肥料列表');
-             await getNutrientList();
-             await $.wait(2 * 1000);
-
-             if (liteFertilizerType == 1) {
-                 log('开始使用小袋化肥');
-                 await useLiteNutrient();
-                 await $.wait(2 * 1000);
-             }
-
-             log('开始浇水');
-             while (waterBack == 0) {
-                 await giveWater();
-                 await $.wait(2 * 1000);
-                 if (boxTimes == 0 && boxState !=7) {
-                     log('开始开宝箱');
-                     await openBox();
+                 if (giftBack) {
+                     log('开始领取新人礼物');
+                     await getGift();
                      await $.wait(2 * 1000);
                  }
-             }
 
-             if (challengeTimes == 0 && challengeState !=5) {
-                 log('开始领取挑战');
-                 await getChallengeReward();
+                 log('开始签到');
+                 await doSignin();
                  await $.wait(2 * 1000);
+
+                 log('开始收取水瓶奖励');
+                 await getBottle();
+                 await $.wait(2 * 1000);
+
+                 log('开始领取每日水滴');
+                 await getTask1();
+                 await $.wait(2 * 1000);
+
+                 log('开始戳鸭子');
+                 do {
+                     await touchDuck();
+                     await $.wait(2 * 1000);
+                 } while (touchDuckBack);
+
+                 if (hour >=7 && hour <9) {
+                     log('开始领取早餐礼包');
+                     await getTask2();
+                     await $.wait(2 * 1000);
+                 } else if (hour >=12 && hour<14) {
+                     log('开始领取午餐礼包');
+                     await getTask2();
+                     await $.wait(2 * 1000);
+                 } else if (hour >=18 && hour <21) {
+                     log('开始领取晚餐礼包');
+                     await getTask2();
+                     await $.wait(2 * 1000);
+                 }
+
+                 if (challengeBack){
+                     log('开始选择挑战');
+                     await chooseChallenge();
+                     await $.wait(2 * 1000);
+                 }
+
+                 if (nutrientBack) {
+                     log('开始肥料签到');
+                     await nutrientSignin();
+                     await $.wait(2 * 1000);
+
+                     log('开始获取肥料列表');
+                     await getNutrientList();
+                     await $.wait(2 * 1000);
+
+                     if (liteFertilizerType == 1) {
+                         log('开始使用小袋化肥');
+                         await useLiteNutrient();
+                         await $.wait(2 * 1000);
+                     }
+                 }
+
+                 log('开始浇水');
+                 while (waterBack == 0) {
+                     await giveWater();
+                     await $.wait(2 * 1000);
+                     if (boxBack == 1 && boxTimes == 0 && boxState !=7) {
+                         log('开始开宝箱');
+                         await openBox();
+                         await $.wait(2 * 1000);
+                     }
+                 }
+
+                 if (challengeBack == 1 && challengeTimes == 0 && challengeState !=5) {
+                     log('开始领取挑战');
+                     await getChallengeReward();
+                     await $.wait(2 * 1000);
+                 }
+
+                 log('开始获取信息');
+                 await getHomeInfo();
+                 await $.wait(2 * 1000);
+
              }
-
-             log('开始获取信息');
-             await getInfo();
-             await $.wait(2 * 1000);
-
+             await SendMsg(msg);
          }
-         await SendMsg(msg);
      }
  
  })()
@@ -358,11 +390,15 @@ function giveWater(timeout = 3 * 1000) {
                     progress =+ result.data.progress.current/result.data.progress.target;
                     progress = progress * 100;
                     progress = progress.toFixed(2);
-                    log(`浇水成功，当前剩余水滴：${result.data.kettle.water_num}，进度：${progress}%`)
-                    challengeTimes =+ result.data.red_points.challenge.times;
-                    challengeState =+ result.data.red_points.challenge.state;
-                    boxState =+ result.data.red_points.box.state;
-                    boxTimes =+ result.data.red_points.box.times;
+                    log(`浇水成功，当前果树等级：${result.data.status}级，剩余水滴：${result.data.kettle.water_num}，进度：${progress}%`)
+                    if (challengeBack) {
+                        challengeTimes =+ result.data.red_points.challenge.times;
+                        challengeState =+ result.data.red_points.challenge.state;
+                    }
+                    if (boxBack) {
+                        boxState =+ result.data.red_points.box.state;
+                        boxTimes =+ result.data.red_points.box.times;
+                    }
 
                 } else if (result.status_code == 1001) {
 
@@ -477,7 +513,7 @@ function getTask1(timeout = 3 * 1000) {
 }
 
 /**
- * 领取晚餐礼包 （18-21点）
+ * 领取三餐礼包 （7-9 12-14 18-21点）
  */
 function getTask2(timeout = 3 * 1000) {
     return new Promise((resolve) => {
@@ -550,7 +586,7 @@ function getNutrientList(timeout = 3 * 1000) {
                     log(`获取肥料列表成功`)
                     normalFertilizerType = result.data.fertilizer.normal;
                     liteFertilizerType = result.data.fertilizer.lite;
-                    nutrientBack = result.data.sign.cur_times;
+                    nutrientSignDay = result.data.sign.cur_times;
 
                 } else {
 
@@ -662,7 +698,7 @@ function useLiteNutrient(timeout = 3 * 1000) {
 /**
  * 获取主页信息
  */
-function getInfo(timeout = 3 * 1000) {
+function getHomeInfo(timeout = 3 * 1000) {
     return new Promise((resolve) => {
         let url = {
             url: `https://minigame.zijieapi.com/ttgame/game_orchard_ecom/home_info`,
@@ -687,9 +723,9 @@ function getInfo(timeout = 3 * 1000) {
                     progress =+ result.data.info.progress.current/result.data.info.progress.target;
                     progress = progress * 100;
                     progress = progress.toFixed(2);
-                    log(`获取主页信息成功，当前养分：${result.data.info.nutrient}，进度：${progress}%`)
-                    msg += `\n养分：${result.data.info.nutrient}，进度：${progress}%`
-                    //fruit_id=5应该是芒果，其他未知，后期补上
+                    log(`获取主页信息成功，当前果树等级：${result.data.info.status}级，养分：${result.data.info.nutrient}，进度：${progress}%`)
+                    msg += `\n当前果树等级：${result.data.info.status}级，养分：${result.data.info.nutrient}，进度：${progress}%`
+                    //fruit_id=5应该是芒果，4是橙子，其他未知，后期补上
 
                 } else {
 
@@ -757,6 +793,122 @@ function touchDuck(timeout = 3 * 1000) {
             }
         }, timeout)
     })
+}
+
+/**
+ * 获取信息
+ */
+function getInfo(timeout = 3 * 1000) {
+    return new Promise((resolve) => {
+        let url = {
+            url: `https://minigame.zijieapi.com/ttgame/game_orchard_ecom/polling_info`,
+            headers: {"referer":"https://tmaservice.developer.toutiao.com/?appid=tte684903979bdf21a02&version=1.0.18","User-Agent":"Mozilla/5.0 (Linux; Android 10; MI 8 Build/QKQ1.190828.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/83.0.4103.101 Mobile Safari/537.3620.4.0 ToutiaoMicroApp/2.49.1.0 PluginVersion/204002","content-type":"application/json","Accept-Encoding":"br, gzip","Host":"minigame.zijieapi.com","Connection":"Keep-Alive","Cookie":`${ddgyCk}`},
+        }
+
+        if (debug) {
+            log(`\n【debug】=============== 这是 获取主页信息 请求 url ===============`);
+            log(JSON.stringify(url));
+        }
+
+        $.get(url, async (error, response, data) => {
+            try {
+                if (debug) {
+                    log(`\n\n【debug】===============这是 获取主页信息 返回data==============`);
+                    log(data)
+                }
+
+                let result = JSON.parse(data);
+                if (result.status_code == 0) {
+                    if (result.data.show_info.show_green_gift == true) {
+                        giftBack = 1;
+                    }
+                    if (result.data.red_points.box) {
+                        boxBack = 1;
+                    }
+                    if (result.data.show_info.show_nutrient == true) {
+                        nutrientBack = 1;
+                    }
+                    if (result.data.show_challenge == true) {
+                        challengeBack =1;
+                    }
+
+                } else {
+
+                    log(`获取主页信息失败，原因是:${result.message}`)
+
+                }
+
+            } catch (e) {
+                log(e)
+            } finally {
+                resolve();
+            }
+        }, timeout)
+    })
+}
+
+/**
+ * 新手礼物 （四次）
+ */
+function getGift(timeout = 3 * 1000) {
+    return new Promise((resolve) => {
+        let url = {
+            url: `https://minigame.zijieapi.com/ttgame/game_orchard_ecom/green_gift/reward?aid=1128`,
+            headers: {"referer":"https://tmaservice.developer.toutiao.com/?appid=tte684903979bdf21a02&version=1.0.18","User-Agent":"Mozilla/5.0 (Linux; Android 10; MI 8 Build/QKQ1.190828.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/83.0.4103.101 Mobile Safari/537.3620.4.0 ToutiaoMicroApp/2.49.1.0 PluginVersion/204002","content-type":"application/json","Accept-Encoding":"br, gzip","Host":"minigame.zijieapi.com","Connection":"Keep-Alive","Cookie":`${ddgyCk}`},
+        }
+
+        if (debug) {
+            log(`\n【debug】=============== 这是 新手礼物 请求 url ===============`);
+            log(JSON.stringify(url));
+        }
+
+        $.get(url, async (error, response, data) => {
+            try {
+                if (debug) {
+                    log(`\n\n【debug】===============这是 新手礼物 返回data==============`);
+                    log(data)
+                }
+
+                let result = JSON.parse(data);
+                if (result.status_code == 0) {
+
+                    log(`领取新手礼物成功，获得：${result.data.reward_item.num}水滴`)
+
+                } else if (result.status_code == 1001) {
+
+                    log(`领取新手礼物失败，原因是:${result.message}`)
+
+                } else {
+
+                    log(`领取新手礼物失败，原因是:${result.message}`)
+
+                }
+
+            } catch (e) {
+                log(e)
+            } finally {
+                resolve();
+            }
+        }, timeout)
+    })
+}
+
+// ============================================重写============================================ \\
+async function GetRewrite() {
+    if ($request.url.indexOf("game_orchard_ecom/polling_info") > -1) {
+        const ck = $request.headers.Cookie;
+        if (ddgyCk) {
+            if (ddgyCk.indexOf(ck) == -1) {
+                ddgyCk = ddgyCk + "@" + ck;
+                $.setdata(ckStr, "ddgyCk");
+                List = ddgyCk.split("@");
+                $.msg($.name + ` 获取第${ddgyCk.length}个 ck 成功: ${ck} ,不用请自行关闭重写!`);
+            }
+        } else {
+            $.setdata(ck, "ddgyCk");
+            $.msg($.name + ` 获取第1个 ck 成功: ${ck} ,不用请自行关闭重写!`);
+        }
+    }
 }
  // ============================================变量检查============================================ \\
  async function Envs() {
