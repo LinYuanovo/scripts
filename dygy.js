@@ -477,7 +477,7 @@ function getTask1(timeout = 3 * 1000) {
 }
 
 /**
- * 领取三餐礼包 （7-9 12-14 18-21点）
+ * 领取晚餐礼包 （18-21点）
  */
 function getTask2(timeout = 3 * 1000) {
     return new Promise((resolve) => {
@@ -736,6 +736,8 @@ function touchDuck(timeout = 3 * 1000) {
                     }
                     if (result.data.red_point[0].round_info.current_round != result.data.red_point[0].round_info.total_round) {
                         touchDuckBack = 1;
+                    } else {
+                        touchDuckBack = 0;
                     }
 
                 } else if (result.status_code == 1001) {
