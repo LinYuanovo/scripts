@@ -9,7 +9,7 @@
 
  cron：15 8,10,12,18,20 * * *
 
- 可以自己抓User-Agent填到 ddgyUA 变量里面，或者懒得抓直接改脚本里面的uaNum也行
+ 可以自己抓User-Agent填到 UA 变量里面，或者懒得抓直接改脚本里面的uaNum也行
 
  [task_local]
  #抖抖果园
@@ -29,9 +29,9 @@ const debug = 0; //0为关闭调试，1为打开调试,默认为0
 const uaNum = 1; //随机UA，从0-20随便选一个填上去
 //////////////////////
 let ddgyCk = ($.isNode() ? process.env.ddgyCk : $.getdata("ddgyCk")) || "";
-let ddgyUA = ($.isNode() ? process.env.ddgyUA : $.getdata("ddgyUA")) || "";
+let UA = ($.isNode() ? process.env.UA : $.getdata("UA")) || "";
 let ck;
-let ddgyUAArr = [];
+let UAArr = [];
 let ddgyCkArr = [];
 let msg = '';
 let boxTimes = 0;
@@ -98,11 +98,13 @@ let ua = User_Agents[uaNum];
 
             for (let index = 0; index < ddgyCkArr.length; index++) {
 
-                if (ddgyUA) {
-                    if (index >= ddgyUAArr.length){
-                        index = ddgyUAArr.length-1
-                    }
-                    ua = ddgyUAArr[index];
+                ua = User_Agents[uaNum+index];
+
+                if (UA) {
+                    if (index >= UAArr.length){
+                        let i = UAArr.length+randomInt(0,2)
+                        ua = User_Agents[uaNum+i];
+                    } else ua = UAArr[index];
                 }
 
                 let num = index + 1
@@ -946,17 +948,17 @@ async function GetRewrite() {
 }
 // ============================================变量检查============================================ \\
 async function Envs() {
-    if (ddgyUA) {
-        if (ddgyUA.indexOf("@") != -1) {
-            ddgyUA.split("@").forEach((item) => {
-                ddgyUAArr.push(item);
+    if (UA) {
+        if (UA.indexOf("@") != -1) {
+            UA.split("@").forEach((item) => {
+                UAArr.push(item);
             });
-        } else if (ddgyUA.indexOf("\n") != -1) {
-            ddgyUA.split("\n").forEach((item) => {
-                ddgyUAArr.push(item);
+        } else if (UA.indexOf("\n") != -1) {
+            UA.split("\n").forEach((item) => {
+                UAArr.push(item);
             });
         } else {
-            ddgyUAArr.push(ddgyUA);
+            UAArr.push(UA);
         }
     }
     if (ddgyCk) {
