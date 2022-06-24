@@ -99,6 +99,9 @@ let ua = User_Agents[uaNum];
             for (let index = 0; index < ddgyCkArr.length; index++) {
 
                 if (ddgyUA) {
+                    if (index >= ddgyUAArr.length){
+                        index = ddgyUAArr.length-1
+                    }
                     ua = ddgyUAArr[index];
                 }
 
