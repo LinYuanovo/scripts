@@ -12,8 +12,8 @@
  const $ = new Env('抖抖果园');
  const notify = $.isNode() ? require('./sendNotify') : '';
  const {log} = console;
- const Notify = 1; //0为关闭通知，1为打开通知,默认为1
- const debug = 0; //0为关闭调试，1为打开调试,默认为0
+ const Notify = 0; //0为关闭通知，1为打开通知,默认为1
+ const debug = 1; //0为关闭调试，1为打开调试,默认为0
  //////////////////////
  let ddgyCk = process.env.ddgyCk;
  let ddgyCkArr = [];
@@ -28,6 +28,7 @@
  let normalFertilizerType = 0;
  let progress = 0.00;
  let hour = parseInt(new Date().getHours());
+ let touchDuckBack = 0;
  
  !(async () => {
  
@@ -75,6 +76,12 @@
              log('开始领取每日水滴');
              await getTask1();
              await $.wait(2 * 1000);
+
+             log('开始戳鸭子');
+             do {
+                 await touchDuck();
+                 await $.wait(2 * 1000);
+             } while (touchDuckBack);
 
              if (hour >=7 && hour <9) {
                  log('开始领取早餐礼包');
@@ -687,6 +694,57 @@ function getInfo(timeout = 3 * 1000) {
                 } else {
 
                     log(`获取主页信息失败，原因是:${result.message}`)
+
+                }
+
+            } catch (e) {
+                log(e)
+            } finally {
+                resolve();
+            }
+        }, timeout)
+    })
+}
+
+/**
+ * 戳鸭子 （应该只有五次）
+ */
+function touchDuck(timeout = 3 * 1000) {
+    return new Promise((resolve) => {
+        let url = {
+            url: `https://minigame.zijieapi.com/ttgame/game_orchard_ecom/scene/touch?scene_id=1`,
+            headers: {"referer":"https://tmaservice.developer.toutiao.com/?appid=tte684903979bdf21a02&version=1.0.18","User-Agent":"Mozilla/5.0 (Linux; Android 10; MI 8 Build/QKQ1.190828.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/83.0.4103.101 Mobile Safari/537.3620.4.0 ToutiaoMicroApp/2.49.1.0 PluginVersion/204002","content-type":"application/json","Accept-Encoding":"br, gzip","Host":"minigame.zijieapi.com","Connection":"Keep-Alive","Cookie":`${ddgyCk}`},
+        }
+
+        if (debug) {
+            log(`\n【debug】=============== 这是 戳鸭子 请求 url ===============`);
+            log(JSON.stringify(url));
+        }
+
+        $.get(url, async (error, response, data) => {
+            try {
+                if (debug) {
+                    log(`\n\n【debug】===============这是 戳鸭子 返回data==============`);
+                    log(data)
+                }
+
+                let result = JSON.parse(data);
+                if (result.status_code == 0) {
+
+                    if (result.data.reward_item != null){
+                        log(`戳鸭子成功，获得：${result.data.reward_item.num}${result.data.reward_item.name}`)
+                    }
+                    if (result.data.red_point[0].round_info.current_round != result.data.red_point[0].round_info.total_round) {
+                        touchDuckBack = 1;
+                    }
+
+                } else if (result.status_code == 1001) {
+
+                    log(`戳鸭子失败，原因是:戳鸭子次数已用完`)
+
+                } else {
+
+                    log(`戳鸭子失败，原因是:${result.message}`)
 
                 }
 
