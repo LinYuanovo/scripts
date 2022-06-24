@@ -477,7 +477,7 @@ function getTask1(timeout = 3 * 1000) {
 }
 
 /**
- * 领取晚餐礼包 （18-21点）
+ * 领取三餐礼包 （7-9 12-14 18-21点）
  */
 function getTask2(timeout = 3 * 1000) {
     return new Promise((resolve) => {
