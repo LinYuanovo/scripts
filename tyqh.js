@@ -668,11 +668,11 @@
                         reportAdventure();
                     } else {
                         let sleepTime =+ result.data.endTime - timestampS();
-                        if (sleepTime <= 60) {
-                            log(`距离冒险结束小于一分钟，等待${sleepTime}秒后收取冒险奖励`)
+                        if (sleepTime <= 120) {
+                            log(`距离冒险结束小于两分钟分钟，等待${sleepTime}秒后收取冒险奖励`)
                             await sleep(sleepTime);
                             reportAdventure();
-                        } else log(`距离冒险结束还有：${parseInt(sleepTime/3600)}小时${parseInt(sleepTime%3600/60)}分钟${parseInt(sleepTime%60)}秒，大于一分钟，不进行等待`)
+                        } else log(`距离冒险结束还有：${parseInt(sleepTime/3600)}小时${parseInt(sleepTime%3600/60)}分钟${parseInt(sleepTime%60)}秒，大于两分钟，不进行等待`)
                     }
                 } else log('查询上一次冒险失败，可能是未进行')
 
