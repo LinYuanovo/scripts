@@ -849,7 +849,7 @@ function getInfo(timeout = 3 * 1000) {
                     log(data)
                 }
 
-                let result = JSON.parse(data);
+                let result = data == "undefined" ? await getInfo() : JSON.parse(data);
                 if (result.status_code == 0) {
                     if (result.data.show_info.show_green_gift == true) {
                         giftBack = 1;
