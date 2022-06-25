@@ -527,8 +527,8 @@ function doHelpAdventure(num1,num2) {
                 let result = eval("("+data+")");
                 let back = result.data;
                 if (result.code == 0) {
-                    log(`去助力账号${back.friendVoList[0].nickName}的冒险成功`)
-                    msg += `\n去助力账号${back.friendVoList[0].nickName}的冒险成功`
+                    log(`去助力账号[${back.friendVoList[0].nickName}]的冒险成功`)
+                    msg += `\n去助力账号[${back.friendVoList[0].nickName}]的冒险成功`
                 } else if (result.code == 1000) {
                     log(`助力冒险失败，可能是对方有未领取或未结束的冒险`)
                 }else {
