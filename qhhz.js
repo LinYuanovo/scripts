@@ -13,6 +13,7 @@
  6-18 更新了收取植物、种新的植物和推送加上昵称，方便辨认（可能）
  6-22 修复了上报挑战失败、洒阳光失败，更新了种植进度（免得老有人说脚本坏了）
  6-23 更新了助力、助力洒阳光
+ 6-25 更新了冒险助力
  */
 
 const $ = new Env('统一茄皇互助');
@@ -46,6 +47,7 @@ let plantStatus = '';
 let helpTaskId = '';
 let helpTaskIdArr = [];
 let giveSunshineBack = 0;
+let helpAdventureIdArr = [];
 
 !(async () => {
 
@@ -76,10 +78,14 @@ let giveSunshineBack = 0;
                 log(`【debug】 这是你的第 ${num} 个账号数组:\n ${tyhz}`);
             }
 
-            log('开始获取AU');
+            log('【开始获取AU】');
             await refreshAu();
             await $.wait(2 * 1000);
             newAuArr[index] = tyau;
+
+            await queryAdventure();
+            await $.wait(2 * 1000);
+            helpAdventureIdArr[index] = adventureId;
 
             await getTask();
             await $.wait(2 * 1000);
@@ -95,7 +101,7 @@ let giveSunshineBack = 0;
 
         }
         if (help) {
-            log(`开始互助`);
+            log(`【开始互助】`);
             for (let num1 = 0; num1 < tyhzArr.length; num1++) {
                 msg += `\n第${num1+1}个账号去助力结果：`
                 log(`第${num1+1}个账号去助力结果：`)
@@ -103,12 +109,19 @@ let giveSunshineBack = 0;
                     if(num1 != num2){
                         await doHelp(num1,num2);
                         await $.wait(2 * 1000);
+                        await doHelpAdventure(num1,num2);
+                        await $.wait(2 * 1000);
                         await doHelpGiveSunshine(num1,num2);
                         await $.wait(2 * 1000);
                     }
                 }
                 log("")
                 msg += `\n`
+            }
+            for (let j = 0; j < tyhzArr.length; j++) {
+                log('【开始冒险】');
+                await startAdventure(j);
+                await $.wait(2 * 1000);
             }
         }
         await SendMsg(msg);
@@ -435,7 +448,7 @@ function doHelp(num1,num2) {
  */
 function doHelpGiveSunshine(num1,num2) {
     let url = {
-        url : `https://api.xiaoyisz.com/qiehuang/ga/plant/giveSunshine?plantId=${plantIdArr[num2]}`,
+        url : `http://api.xiaoyisz.com/qiehuang/ga/plant/giveSunshine?plantId=${plantIdArr[num2]}`,
         headers : {
             "Host": "api.xiaoyisz.com",
             "authorization": `${newAuArr[num1]}`,
@@ -474,6 +487,209 @@ function doHelpGiveSunshine(num1,num2) {
                     msg += `\n助力洒阳光失败，原因是：${result.message}`
 
                 }
+
+            } catch (e) {
+                log(e)
+            } finally {
+                resolve();
+            }
+        })
+    })
+}
+
+/**
+ * 互助冒险 （num1助力num2）
+ */
+function doHelpAdventure(num1,num2) {
+    let url = {
+        url : `http://api.xiaoyisz.com/qiehuang/ga/user/adventure/help?adventureId=${helpAdventureIdArr[num2]}`,
+        headers : {
+            "Host": "api.xiaoyisz.com",
+            "authorization": `${newAuArr[num1]}`,
+            "user-agent": "Mozilla/5.0 (Linux; Android 10; MI 8 Build/QKQ1.190828.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/86.0.4240.99 XWEB/3235 MMWEBSDK/20220204 Mobile Safari/537.36 MMWEBID/6242 MicroMessenger/8.0.20.2080(0x28001435) Process/appbrand0 WeChat/arm64 Weixin NetType/WIFI Language/zh_CN ABI/arm64 miniProgram/wx532ecb3bdaaf92f9",
+            "content-type": "application/json"
+        },
+    }
+    return new Promise((resolve) => {
+
+        if (debug) {
+            log(`\n【debug】=============== 这是 互助冒险 请求 url ===============`);
+            log(JSON.stringify(url));
+        }
+
+        $.get(url, async (error, response, data) => {
+            try {
+                if (debug) {
+                    log(`\n\n【debug】===============这是 互助冒险 返回data==============`);
+                    log(data)
+                }
+
+                let result = eval("("+data+")");
+                let back = result.data;
+                if (result.code == 0) {
+                    log(`去助力账号${back.friendVoList[0].nickName}的冒险成功`)
+                    msg += `\n去助力账号${back.friendVoList[0].nickName}的冒险成功`
+                } else if (result.code == 1000) {
+                    log(`助力冒险失败，可能是对方有未领取或未结束的冒险`)
+                }else {
+                    log(`助力冒险失败，原因是：${result.message}`)
+                    msg += `\n助力冒险失败，原因是：${result.message}`
+                }
+
+            } catch (e) {
+                log(e)
+            } finally {
+                resolve();
+            }
+        })
+    })
+}
+
+/**
+ * 查询冒险
+ */
+function queryAdventure(timeout = 2*1000) {
+    let url = {
+        url : `http://api.xiaoyisz.com/qiehuang/ga/user/adventure/info?userId=-1&type=2`,
+        headers : {
+            "Host": "api.xiaoyisz.com",
+            "authorization": `${tyau}`,
+            "user-agent": `Mozilla/5.0 (Linux; Android 10; MI 8 Build/QKQ1.190828.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/86.0.4240.99 XWEB/3235 MMWEBSDK/20220204 Mobile Safari/537.36 MMWEBID/6242 MicroMessenger/8.0.20.2080(0x28001435) Process/appbrand0 WeChat/arm64 Weixin NetType/WIFI Language/zh_CN ABI/arm64 miniProgram/wx532ecb3bdaaf92f9`,
+            "content-type": "application/json"
+        },
+    }
+    return new Promise((resolve) => {
+
+        if (debug) {
+            log(`\n【debug】=============== 这是 查询冒险 请求 url ===============`);
+            log(JSON.stringify(url));
+        }
+
+        $.get(url, async (error, response, data) => {
+            try {
+                if (debug) {
+                    log(`\n\n【debug】===============这是 查询冒险 返回data==============`);
+                    log(data)
+                }
+
+                let result = JSON.parse(data);
+                if (result.code == 904) {
+                    refreshAu();
+                }
+                if (result.code == 0){
+                    adventureId = result.data.adventureId;
+                    if (timestampS() >= result.data.endTime) {
+                        reportAdventure();
+                    } else if (result.data.endTime != null) {
+                        let sleepTime =+ result.data.endTime - timestampS();
+                        if (sleepTime <= 60) {
+                            log(`距离冒险结束小于一分钟，等待${sleepTime}秒后收取冒险奖励`)
+                            await $.wait(sleepTime*1000);
+                            reportAdventure();
+                        } else log(`距离冒险结束还有：${parseInt(sleepTime/3600)}小时${parseInt(sleepTime%3600/60)}分钟${parseInt(sleepTime%60)}秒，大于一分钟，不进行等待`)
+                    }
+                } else log(`查询上一次冒险失败，原因是：${result.message}`)
+
+            } catch (e) {
+                log(e)
+            } finally {
+                resolve();
+            }
+        }, timeout)
+    })
+}
+
+/**
+ * 上报冒险
+ */
+function reportAdventure(timeout = 2*1000) {
+    let url = {
+        url : `http://api.xiaoyisz.com/qiehuang/ga/user/adventure/drawPrize?adventureId=${adventureId}`,
+        headers : {
+            "Host": "api.xiaoyisz.com",
+            "authorization": `${tyau}`,
+            "user-agent": `Mozilla/5.0 (Linux; Android 10; MI 8 Build/QKQ1.190828.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/86.0.4240.99 XWEB/3235 MMWEBSDK/20220204 Mobile Safari/537.36 MMWEBID/6242 MicroMessenger/8.0.20.2080(0x28001435) Process/appbrand0 WeChat/arm64 Weixin NetType/WIFI Language/zh_CN ABI/arm64 miniProgram/wx532ecb3bdaaf92f9`,
+            "Content-Type": "application/json",
+        },
+    }
+    return new Promise((resolve) => {
+
+        if (debug) {
+            log(`\n【debug】=============== 这是 上报冒险 请求 url ===============`);
+            log(JSON.stringify(url));
+        }
+
+        $.get(url, async (error, response, data) => {
+            try {
+                if (debug) {
+                    log(`\n\n【debug】===============这是 上报冒险 返回data==============`);
+                    log(data)
+                }
+
+                let result = JSON.parse(data);
+                let back = eval(result.data);
+                if (result.code == 904) {
+
+                    refreshAu();
+
+                }
+                if (result.code == 0){
+                    log(`冒险收取成功`)
+                    await $.wait(3000);
+                    queryAdventure();
+                } else if (result.code == 500) {
+                    log(`当前无可收取的冒险`)
+                } else if (result.code == 1000) {
+                    log(`冒险已收取`)
+                } else log('冒险未到时间')
+
+            } catch (e) {
+                log(e)
+            } finally {
+                resolve();
+            }
+        }, timeout)
+    })
+}
+
+/**
+ * 开始冒险
+ */
+function startAdventure(num) {
+    let url = {
+        url : `http://api.xiaoyisz.com/qiehuang/ga/user/adventure/start`,
+        headers : {
+            "Host": "api.xiaoyisz.com",
+            "authorization": `${newAuArr[num]}`,
+            "user-agent": `Mozilla/5.0 (Linux; Android 10; MI 8 Build/QKQ1.190828.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/86.0.4240.99 XWEB/3235 MMWEBSDK/20220204 Mobile Safari/537.36 MMWEBID/6242 MicroMessenger/8.0.20.2080(0x28001435) Process/appbrand0 WeChat/arm64 Weixin NetType/WIFI Language/zh_CN ABI/arm64 miniProgram/wx532ecb3bdaaf92f9`,
+            "content-type": "application/json"
+        },
+    }
+    return new Promise((resolve) => {
+
+        if (debug) {
+            log(`\n【debug】=============== 这是 开始冒险 请求 url ===============`);
+            log(JSON.stringify(url));
+        }
+
+        $.get(url, async (error, response, data) => {
+            try {
+                if (debug) {
+                    log(`\n\n【debug】===============这是 开始冒险 返回data==============`);
+                    log(data)
+                }
+
+                let result = JSON.parse(data);
+                if (result.code == 904) {
+
+                    refreshAu();
+
+                }
+                if (result.code == 0){
+                    log('冒险开始成功')
+                } else if (result.code ==1000) {
+                    log(`当前已有冒险，不能进行下一次冒险`)
+                } else log(`${result.message}`)
 
             } catch (e) {
                 log(e)
