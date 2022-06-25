@@ -7,7 +7,7 @@
  抓包：api.xiaoyisz.com/qiehuang/ga/public/api/login  这个登录包里 body 部分的 全部
  变量：tybody='body@xxxx '  多个账号用 @ 或者 换行 分割 
  定时一天三次，八个小时一次收取冒险奖励
- cron: 10 0/8 * * *
+ cron: 10,15 0/8 * * *
 
  6-14 更新了AU获取方式，理论上不会过期了
  6-18 更新了收取植物、种新的植物和推送加上昵称，方便辨认（可能）
