@@ -158,12 +158,11 @@
                  log("【开始查询冒险奖励】");
                  await queryAdventure();
                  await $.wait(2 * 1000);
+                 await sleep(randomInt(10000,20000))
 
-                 if (adventureBack) {
-                     log("【开始进行冒险】");
-                     await startAdventure();
-                     await $.wait(2 * 1000);
-                 }
+                 log("【开始进行冒险】");
+                 await startAdventure();
+                 await $.wait(2 * 1000);
     
                  log("【开始获取植物详情】");
                  await getPlant(index);
@@ -618,7 +617,9 @@
                 }
                 if (result.code == 0){
                     log('冒险开始成功')
-                } else log('上一次冒险还未结束')
+                } else if (result.code ==1000) {
+                    log(`当前已有冒险，不能进行下一次冒险`)
+                } else log(`${result.message}`)
 
             } catch (e) {
                 log(e)
@@ -670,7 +671,7 @@
                         let sleepTime =+ result.data.endTime - timestampS();
                         if (sleepTime <= 60) {
                             log(`距离冒险结束小于一分钟，等待${sleepTime}秒后收取冒险奖励`)
-                            await sleep(sleepTime);
+                            await sleep(sleepTime*1000);
                             reportAdventure();
                         } else log(`距离冒险结束还有：${parseInt(sleepTime/3600)}小时${parseInt(sleepTime%3600/60)}分钟${parseInt(sleepTime%60)}秒，大于一分钟，不进行等待`)
                     }
@@ -720,8 +721,11 @@
 
                 }
                 if (result.code == 0){
-                    adventureBack = 1;
                     log(`冒险收取成功`)
+                } else if (result.code == 500) {
+                    log(`当前无可收取的冒险`)
+                } else if (result.code == 1000) {
+                    log(`冒险已收取`)
                 } else log('冒险未到时间')
 
             } catch (e) {
