@@ -160,11 +160,9 @@ let ua = User_Agents[uaNum];
                     await $.wait(2 * 1000);
                 }
 
-                if (challengeBack){
-                    log('开始选择挑战');
-                    await chooseChallenge();
-                    await $.wait(2 * 1000);
-                }
+                log('开始选择挑战');
+                await chooseChallenge();
+                await $.wait(2 * 1000);
 
                 if (nutrientBack) {
                     log('开始肥料签到');
@@ -193,7 +191,7 @@ let ua = User_Agents[uaNum];
                     }
                 }
 
-                if (challengeBack == 1 && challengeTimes == 0 && challengeState !=5) {
+                if (challengeTimes == 0 && challengeState !=5) {
                     log('开始领取挑战');
                     await getChallengeReward();
                     await $.wait(2 * 1000);
@@ -427,10 +425,8 @@ function giveWater(timeout = 3 * 1000) {
                     progress = progress * 100;
                     progress = progress.toFixed(2);
                     log(`浇水成功，当前果树等级：${result.data.status}级，剩余水滴：${result.data.kettle.water_num}，进度：${progress}%`)
-                    if (challengeBack) {
-                        challengeTimes =+ result.data.red_points.challenge.times;
-                        challengeState =+ result.data.red_points.challenge.state;
-                    }
+                    challengeTimes =+ result.data.red_points.challenge.times;
+                    challengeState =+ result.data.red_points.challenge.state;
                     if (boxBack) {
                         boxState =+ result.data.red_points.box.state;
                         boxTimes =+ result.data.red_points.box.times;
@@ -864,10 +860,6 @@ function getInfo(timeout = 3 * 1000) {
                     if (result.data.show_info.show_nutrient == true) {
                         nutrientBack = 1;
                     }
-                    if (result.data.show_challenge == true) {
-                        challengeBack =1;
-                    }
-
                 } else {
 
                     log(`获取主页信息失败，原因是:${result.message}`)
