@@ -555,29 +555,29 @@ function getTask2(timeout = 3 * 1000) {
         }
 
         if (debug) {
-            log(`\n【debug】=============== 这是 领取晚餐礼包 请求 url ===============`);
+            log(`\n【debug】=============== 这是 领取三餐礼包 请求 url ===============`);
             log(JSON.stringify(url));
         }
 
         $.get(url, async (error, response, data) => {
             try {
                 if (debug) {
-                    log(`\n\n【debug】===============这是 领取晚餐礼包 返回data==============`);
+                    log(`\n\n【debug】===============这是 领取三餐礼包 返回data==============`);
                     log(data)
                 }
 
                 let result = JSON.parse(data);
                 if (result.status_code == 0) {
 
-                    log(`领取每日水滴成功，获得：${result.data.task.reward_item.num}水滴`)
+                    log(`领取三餐礼包成功，获得：${result.data.task.reward_item.num}水滴`)
 
                 } else if (result.status_code == 1001) {
 
-                    log(`领取每日水滴失败，原因是:未到时间`)
+                    log(`领取三餐礼包失败，原因是:未到时间`)
 
                 } else {
 
-                    log(`领取每日水滴失败，原因是:${result.message}`)
+                    log(`领取三餐礼包失败，原因是:${result.message}`)
 
                 }
 
