@@ -7,7 +7,15 @@
  抓包：api.xiaoyisz.com/qiehuang/ga/public/api/login  这个登录包里 body 部分的 全部
  变量：tybody='body@xxxx '  多个账号用 @ 或者 换行 分割 
  定时一天三次，八个小时一次收取冒险奖励
- cron: 10,15 0/8 * * *
+ cron: 10 0/8 * * *
+
+ [task_local]
+ #统一茄皇
+ 10,15 0/8 * * *  https://raw.githubusercontent.com/LinYuanovo/scripts/main/tyqh.js, tag=统一茄皇, enabled=true
+ [rewrite_local]
+ http://api.xiaoyisz.com/qiehuang/ga/public/api/login url script-request-header https://raw.githubusercontent.com/LinYuanovo/scripts/main/tyqh.js
+ [MITM]
+ hostname = api.xiaoyisz.com
 
  6-14 更新了AU获取方式，理论上不会过期了
  6-18 更新了收取植物、种新的植物和推送加上昵称，方便辨认（可能）
@@ -23,7 +31,7 @@
  const uaNum = 1; //随机UA，从0-20随便选一个填上去
  //////////////////////
  let tyau = '';
- let tybody = process.env.tybody;
+ let tybody = ($.isNode() ? process.env.tybody : $.getdata("tybody")) || "";
  let UA = ($.isNode() ? process.env.UA : $.getdata("UA")) || "";
  let UAArr = [];
  let tybodyArr = [];
@@ -77,112 +85,116 @@
  let ua = User_Agents[uaNum];
  
  !(async () => {
- 
-     if (!(await Envs()))
-         return;
-     else {
 
-         log(`\n\n=============================================    \n脚本执行 - 北京时间(UTC+8)：${new Date(
-             new Date().getTime() + new Date().getTimezoneOffset() * 60 * 1000 +
-             8 * 60 * 60 * 1000).toLocaleString()} \n=============================================\n`);
+     if (typeof $request !== "undefined") {
+         await GetRewrite();
+     } else {
+         if (!(await Envs()))
+             return;
+         else {
 
-         await poem();
-        
-         log(`\n=================== 共找到 ${tybodyArr.length} 个账号 ===================`)
- 
-         if (debug) {
-             log(`【debug】 这是你的全部账号数组:\n ${tybodyArr}`);
-         }
+             log(`\n\n=============================================    \n脚本执行 - 北京时间(UTC+8)：${new Date(
+                 new Date().getTime() + new Date().getTimezoneOffset() * 60 * 1000 +
+                 8 * 60 * 60 * 1000).toLocaleString()} \n=============================================\n`);
 
-         for (let index = 0; index < tybodyArr.length; index++) {
+             await poem();
 
-             ua = User_Agents[uaNum+index];
-
-             if (UA) {
-                 if (index >= UAArr.length){
-                     let i = UAArr.length+randomInt(0,2)
-                     ua = User_Agents[uaNum+i];
-                 } else ua = UAArr[index];
-             }
-
-             tybody = tybodyArr[index];
-             let num = index + 1
-
-             log(`\n========= 开始【第 ${num} 个账号】=========\n`)
+             log(`\n=================== 共找到 ${tybodyArr.length} 个账号 ===================`)
 
              if (debug) {
-                log(`【debug】 这是你的第 ${num} 个账号数组:\n ${tybody}`);
+                 log(`【debug】 这是你的全部账号数组:\n ${tybodyArr}`);
              }
- 
-             msg += `\n第${num}个账号运行结果：`
 
-             log('【开始获取AU】');
-             await refreshAu();
-             await $.wait(2 * 1000);
-             newAuArr[index] = tyau;
+             for (let index = 0; index < tybodyArr.length; index++) {
 
-             log('【开始查询任务】');
-             await getTask();
-             await $.wait(2 * 1000);
-             helpTaskIdArr[index] = helpTaskId;
+                 ua = User_Agents[uaNum+index];
 
-             if (auback != 1){
-
-                 for (let i=0;i<10;i++){
-                    if (taskBack[i]) {
-                        if (i == 0) {
-                            log(`\n助力任务还未完成，建议执行互助\n`);
-                        }
-                        else log(`【第${i+1}个任务未完成，开始执行第${i+1}个任务】`);
-                        await report(i);
-                        if (i == 2){
-                            await report(i);
-                            await report(i);
-                            await report(i);
-                            await report(i);
-                        }
-                        await $.wait(2 * 1000);
-                        await getDrawPriz(i);
-                        await $.wait(2 * 1000);
-                    }
+                 if (UA) {
+                     if (index >= UAArr.length){
+                         let i = UAArr.length+randomInt(0,2)
+                         ua = User_Agents[uaNum+i];
+                     } else ua = UAArr[index];
                  }
 
-                 log('【开始收取阳光】');
-                 await getSunshine();
-                 await $.wait(2 * 1000);
+                 tybody = tybodyArr[index];
+                 let num = index + 1
 
-                 log("【开始进行挑战】");
-                 await startCallenge();
-                 await $.wait(2 * 1000);
+                 log(`\n========= 开始【第 ${num} 个账号】=========\n`)
 
-                 log("【开始查询冒险奖励】");
-                 await queryAdventure();
-                 await $.wait(2 * 1000);
-                 await sleep(randomInt(10000,20000))
+                 if (debug) {
+                     log(`【debug】 这是你的第 ${num} 个账号数组:\n ${tybody}`);
+                 }
 
-                 log("【开始进行冒险】");
-                 await startAdventure();
-                 await $.wait(2 * 1000);
-    
-                 log("【开始获取植物详情】");
-                 await getPlant(index);
-                 await $.wait(2 * 1000);
-                 plantIdArr[index] = tyPlantId;
+                 msg += `\n第${num}个账号运行结果：`
 
-                 log("【开始洒阳光】");
-                 do {
-                     await giveSunshine();
+                 log('【开始获取AU】');
+                 await refreshAu();
+                 await $.wait(2 * 1000);
+                 newAuArr[index] = tyau;
+
+                 log('【开始查询任务】');
+                 await getTask();
+                 await $.wait(2 * 1000);
+                 helpTaskIdArr[index] = helpTaskId;
+
+                 if (auback != 1){
+
+                     for (let i=0;i<10;i++){
+                         if (taskBack[i]) {
+                             if (i == 0) {
+                                 log(`\n助力任务还未完成，建议执行互助\n`);
+                             }
+                             else log(`【第${i+1}个任务未完成，开始执行第${i+1}个任务】`);
+                             await report(i);
+                             if (i == 2){
+                                 await report(i);
+                                 await report(i);
+                                 await report(i);
+                                 await report(i);
+                             }
+                             await $.wait(2 * 1000);
+                             await getDrawPriz(i);
+                             await $.wait(2 * 1000);
+                         }
+                     }
+
+                     log('【开始收取阳光】');
+                     await getSunshine();
                      await $.wait(2 * 1000);
-                 } while (giveSunshineBack == 1);
 
-                 log("【开始查询信息】");
-                 await getUserInfo();
-                 await $.wait(2 * 1000);
-                 idArr[index] = id;
+                     log("【开始进行挑战】");
+                     await startCallenge();
+                     await $.wait(2 * 1000);
+
+                     log("【开始查询冒险奖励】");
+                     await queryAdventure();
+                     await $.wait(2 * 1000);
+                     await sleep(randomInt(10000,20000))
+
+                     log("【开始进行冒险】");
+                     await startAdventure();
+                     await $.wait(2 * 1000);
+
+                     log("【开始获取植物详情】");
+                     await getPlant(index);
+                     await $.wait(2 * 1000);
+                     plantIdArr[index] = tyPlantId;
+
+                     log("【开始洒阳光】");
+                     do {
+                         await giveSunshine();
+                         await $.wait(2 * 1000);
+                     } while (giveSunshineBack == 1);
+
+                     log("【开始查询信息】");
+                     await getUserInfo();
+                     await $.wait(2 * 1000);
+                     idArr[index] = id;
+                 }
+
              }
-
+             await SendMsg(msg);
          }
-         await SendMsg(msg);
      }
  
  })()
@@ -1210,6 +1222,27 @@ function doHelpGiveSunshine(num1,num2) {
         })
     })
 }
+
+// ============================================重写============================================ \\
+async function GetRewrite() {
+    if ($request.url.indexOf("qiehuang/ga/public/api/login") > -1) {
+        const ck = $request.body;
+        if (tybody) {
+            if (tybody.indexOf(ck) == -1) {
+                tybody = tybody + "@" + ck;
+                let tyhz = tyhz + "@" + ck;
+                $.setdata(tybody, "tybody");
+                $.setdata(tybody, "tyhz")
+                List = tybody.split("@");
+                $.msg($.name + ` 获取第${tybody.length}个 ck 成功: ${ck} ,不用请自行关闭重写!`);
+            }
+        } else {
+            $.setdata(ck, "tybody");
+            $.msg($.name + ` 获取第1个 ck 成功: ${ck} ,不用请自行关闭重写!`);
+        }
+    }
+}
+
  // ============================================变量检查============================================ \\
  async function Envs() {
      if (UA) {
