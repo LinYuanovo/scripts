@@ -217,7 +217,7 @@ let ua = User_Agents[uaNum];
 function doSignin(timeout = 3 * 1000) {
     return new Promise((resolve) => {
         let url = {
-            url: `https://minigame.zijieapi.com/ttgame/game_orchard_ecom/sign_in/reward`,
+            url: `http://minigame.zijieapi.com/ttgame/game_orchard_ecom/sign_in/reward`,
             headers: {"referer":"https://tmaservice.developer.toutiao.com/?appid=tte684903979bdf21a02&version=1.0.18","User-Agent":`${ua}`,"content-type":"application/json","Accept-Encoding":"br, gzip","Host":"minigame.zijieapi.com","Connection":"Keep-Alive","Cookie":`${ddgyCk}`},
         }
 
@@ -263,7 +263,7 @@ function doSignin(timeout = 3 * 1000) {
 function getBottle(timeout = 3 * 1000) {
     return new Promise((resolve) => {
         let url = {
-            url: `https://minigame.zijieapi.com/ttgame/game_orchard_ecom/water_bottle/reward`,
+            url: `http://minigame.zijieapi.com/ttgame/game_orchard_ecom/water_bottle/reward`,
             headers: {"referer":"https://tmaservice.developer.toutiao.com/?appid=tte684903979bdf21a02&version=1.0.18","User-Agent":`${ua}`,"content-type":"application/json","Accept-Encoding":"br, gzip","Host":"minigame.zijieapi.com","Connection":"Keep-Alive","Cookie":`${ddgyCk}`},
         }
 
@@ -309,7 +309,7 @@ function getBottle(timeout = 3 * 1000) {
 function chooseChallenge(timeout = 3 * 1000) {
     return new Promise((resolve) => {
         let url = {
-            url: `https://minigame.zijieapi.com/ttgame/game_orchard_ecom/challenge/choose?task_id=2`,
+            url: `http://minigame.zijieapi.com/ttgame/game_orchard_ecom/challenge/choose?task_id=2`,
             headers: {"referer":"https://tmaservice.developer.toutiao.com/?appid=tte684903979bdf21a02&version=1.0.18","User-Agent":`${ua}`,"content-type":"application/json","Accept-Encoding":"br, gzip","Host":"minigame.zijieapi.com","Connection":"Keep-Alive","Cookie":`${ddgyCk}`},
         }
 
@@ -355,7 +355,7 @@ function chooseChallenge(timeout = 3 * 1000) {
 function getChallengeReward(timeout = 3 * 1000) {
     return new Promise((resolve) => {
         let url = {
-            url: `https://minigame.zijieapi.com/ttgame/game_orchard_ecom/challenge/reward`,
+            url: `http://minigame.zijieapi.com/ttgame/game_orchard_ecom/challenge/reward`,
             headers: {"referer":"https://tmaservice.developer.toutiao.com/?appid=tte684903979bdf21a02&version=1.0.18","User-Agent":`${ua}`,"content-type":"application/json","Accept-Encoding":"br, gzip","Host":"minigame.zijieapi.com","Connection":"Keep-Alive","Cookie":`${ddgyCk}`},
         }
 
@@ -402,7 +402,7 @@ function getChallengeReward(timeout = 3 * 1000) {
 function giveWater(timeout = 3 * 1000) {
     return new Promise((resolve) => {
         let url = {
-            url: `https://minigame.zijieapi.com/ttgame/game_orchard_ecom/tree/water`,
+            url: `http://minigame.zijieapi.com/ttgame/game_orchard_ecom/tree/water`,
             headers: {"referer":"https://tmaservice.developer.toutiao.com/?appid=tte684903979bdf21a02&version=1.0.18","User-Agent":`${ua}`,"content-type":"application/json","Accept-Encoding":"br, gzip","Host":"minigame.zijieapi.com","Connection":"Keep-Alive","Cookie":`${ddgyCk}`},
         }
 
@@ -458,7 +458,7 @@ function giveWater(timeout = 3 * 1000) {
 function openBox(timeout = 3 * 1000) {
     return new Promise((resolve) => {
         let url = {
-            url: `https://minigame.zijieapi.com/ttgame/game_orchard_ecom/box/open`,
+            url: `http://minigame.zijieapi.com/ttgame/game_orchard_ecom/box/open`,
             headers: {"referer":"https://tmaservice.developer.toutiao.com/?appid=tte684903979bdf21a02&version=1.0.18","User-Agent":`${ua}`,"content-type":"application/json","Accept-Encoding":"br, gzip","Host":"minigame.zijieapi.com","Connection":"Keep-Alive","Cookie":`${ddgyCk}`},
         }
 
@@ -504,7 +504,7 @@ function openBox(timeout = 3 * 1000) {
 function getTask1(timeout = 3 * 1000) {
     return new Promise((resolve) => {
         let url = {
-            url: `https://minigame.zijieapi.com/ttgame/game_orchard_ecom/tasks/reward?task_id=1`,
+            url: `http://minigame.zijieapi.com/ttgame/game_orchard_ecom/tasks/reward?task_id=1`,
             headers: {"referer":"https://tmaservice.developer.toutiao.com/?appid=tte684903979bdf21a02&version=1.0.18","User-Agent":`${ua}`,"content-type":"application/json","Accept-Encoding":"br, gzip","Host":"minigame.zijieapi.com","Connection":"Keep-Alive","Cookie":`${ddgyCk}`},
         }
 
@@ -550,7 +550,7 @@ function getTask1(timeout = 3 * 1000) {
 function getTask2(timeout = 3 * 1000) {
     return new Promise((resolve) => {
         let url = {
-            url: `https://minigame.zijieapi.com/ttgame/game_orchard_ecom/tasks/reward?task_id=2`,
+            url: `http://minigame.zijieapi.com/ttgame/game_orchard_ecom/tasks/reward?task_id=2`,
             headers: {"referer":"https://tmaservice.developer.toutiao.com/?appid=tte684903979bdf21a02&version=1.0.18","User-Agent":`${ua}`,"content-type":"application/json","Accept-Encoding":"br, gzip","Host":"minigame.zijieapi.com","Connection":"Keep-Alive","Cookie":`${ddgyCk}`},
         }
 
@@ -596,7 +596,7 @@ function getTask2(timeout = 3 * 1000) {
 function getNutrientList(timeout = 3 * 1000) {
     return new Promise((resolve) => {
         let url = {
-            url: `https://minigame.zijieapi.com/ttgame/game_orchard_ecom/nutrient/list`,
+            url: `http://minigame.zijieapi.com/ttgame/game_orchard_ecom/nutrient/list`,
             headers: {"referer":"https://tmaservice.developer.toutiao.com/?appid=tte684903979bdf21a02&version=1.0.18","User-Agent":`${ua}`,"content-type":"application/json","Accept-Encoding":"br, gzip","Host":"minigame.zijieapi.com","Connection":"Keep-Alive","Cookie":`${ddgyCk}`},
         }
 
@@ -641,7 +641,7 @@ function getNutrientList(timeout = 3 * 1000) {
 function nutrientSignin(timeout = 3 * 1000) {
     return new Promise((resolve) => {
         let url = {
-            url: `https://minigame.zijieapi.com/ttgame/game_orchard_ecom/nutrient/sign_in`,
+            url: `http://minigame.zijieapi.com/ttgame/game_orchard_ecom/nutrient/sign_in`,
             headers: {"referer":"https://tmaservice.developer.toutiao.com/?appid=tte684903979bdf21a02&version=1.0.18","User-Agent":`${ua}`,"content-type":"application/json","Accept-Encoding":"br, gzip","Host":"minigame.zijieapi.com","Connection":"Keep-Alive","Cookie":`${ddgyCk}`},
         }
 
@@ -687,7 +687,7 @@ function nutrientSignin(timeout = 3 * 1000) {
 function useLiteNutrient(timeout = 3 * 1000) {
     return new Promise((resolve) => {
         let url = {
-            url: `https://minigame.zijieapi.com/ttgame/game_orchard_ecom/use/fertilizer?fertilizer_type=4`,
+            url: `http://minigame.zijieapi.com/ttgame/game_orchard_ecom/use/fertilizer?fertilizer_type=4`,
             headers: {"referer":"https://tmaservice.developer.toutiao.com/?appid=tte684903979bdf21a02&version=1.0.18","User-Agent":`${ua}`,"content-type":"application/json","Accept-Encoding":"br, gzip","Host":"minigame.zijieapi.com","Connection":"Keep-Alive","Cookie":`${ddgyCk}`},
         }
 
@@ -733,7 +733,7 @@ function useLiteNutrient(timeout = 3 * 1000) {
 function getHomeInfo(timeout = 3 * 1000) {
     return new Promise((resolve) => {
         let url = {
-            url: `https://minigame.zijieapi.com/ttgame/game_orchard_ecom/home_info`,
+            url: `http://minigame.zijieapi.com/ttgame/game_orchard_ecom/home_info`,
             headers: {"referer":"https://tmaservice.developer.toutiao.com/?appid=tte684903979bdf21a02&version=1.0.18","User-Agent":`${ua}`,"content-type":"application/json","Accept-Encoding":"br, gzip","Host":"minigame.zijieapi.com","Connection":"Keep-Alive","Cookie":`${ddgyCk}`},
         }
 
@@ -780,7 +780,7 @@ function getHomeInfo(timeout = 3 * 1000) {
 function touchDuck(timeout = 3 * 1000) {
     return new Promise((resolve) => {
         let url = {
-            url: `https://minigame.zijieapi.com/ttgame/game_orchard_ecom/scene/touch?scene_id=1`,
+            url: `http://minigame.zijieapi.com/ttgame/game_orchard_ecom/scene/touch?scene_id=1`,
             headers: {"referer":"https://tmaservice.developer.toutiao.com/?appid=tte684903979bdf21a02&version=1.0.18","User-Agent":`${ua}`,"content-type":"application/json","Accept-Encoding":"br, gzip","Host":"minigame.zijieapi.com","Connection":"Keep-Alive","Cookie":`${ddgyCk}`},
         }
 
@@ -833,7 +833,7 @@ function touchDuck(timeout = 3 * 1000) {
 function getInfo(timeout = 3 * 1000) {
     return new Promise((resolve) => {
         let url = {
-            url: `https://minigame.zijieapi.com/ttgame/game_orchard_ecom/polling_info`,
+            url: `http://minigame.zijieapi.com/ttgame/game_orchard_ecom/polling_info`,
             headers: {"referer":"https://tmaservice.developer.toutiao.com/?appid=tte684903979bdf21a02&version=1.0.18","User-Agent":`${ua}`,"content-type":"application/json","Accept-Encoding":"br, gzip","Host":"minigame.zijieapi.com","Connection":"Keep-Alive","Cookie":`${ddgyCk}`},
         }
 
@@ -881,7 +881,7 @@ function getInfo(timeout = 3 * 1000) {
 function getGift(timeout = 3 * 1000) {
     return new Promise((resolve) => {
         let url = {
-            url: `https://minigame.zijieapi.com/ttgame/game_orchard_ecom/green_gift/reward?aid=1128`,
+            url: `http://minigame.zijieapi.com/ttgame/game_orchard_ecom/green_gift/reward?aid=1128`,
             headers: {"referer":"https://tmaservice.developer.toutiao.com/?appid=tte684903979bdf21a02&version=1.0.18","User-Agent":`${ua}`,"content-type":"application/json","Accept-Encoding":"br, gzip","Host":"minigame.zijieapi.com","Connection":"Keep-Alive","Cookie":`${ddgyCk}`},
         }
 
