@@ -169,11 +169,6 @@
                      log("【开始查询冒险奖励】");
                      await queryAdventure();
                      await $.wait(2 * 1000);
-                     await sleep(randomInt(10000,20000))
-
-                     log("【开始进行冒险】");
-                     await startAdventure();
-                     await $.wait(2 * 1000);
 
                      log("【开始获取植物详情】");
                      await getPlant(index);
@@ -185,6 +180,11 @@
                          await giveSunshine();
                          await $.wait(2 * 1000);
                      } while (giveSunshineBack == 1);
+
+                     log("【开始获取植物详情】");
+                     await getPlant(index);
+                     await $.wait(2 * 1000);
+                     plantIdArr[index] = tyPlantId;
 
                      log("【开始查询信息】");
                      await getUserInfo();
@@ -630,7 +630,7 @@
                 if (result.code == 0){
                     log('冒险开始成功')
                 } else if (result.code ==1000) {
-                    log(`当前已有冒险，不能进行下一次冒险`)
+                    log(`冒险开始失败，可能是上报异常或者当前已有冒险`)
                 } else log(`${result.message}`)
 
             } catch (e) {
