@@ -48,6 +48,7 @@ let helpTaskId = '';
 let helpTaskIdArr = [];
 let giveSunshineBack = 0;
 let helpAdventureIdArr = [];
+let doHelpAdventureBack = 0;
 
 !(async () => {
 
@@ -81,37 +82,39 @@ let helpAdventureIdArr = [];
             log('【开始获取AU】');
             await refreshAu();
             await $.wait(2 * 1000);
-            newAuArr[index] = tyau;
 
             await queryAdventure();
-            await $.wait(2 * 1000);
-            helpAdventureIdArr[index] = adventureId;
+            await $.wait(12 * 1000);
 
             await getTask();
             await $.wait(2 * 1000);
-            helpTaskIdArr[index] = helpTaskId;
 
             await getPlant(index);
             await $.wait(2 * 1000);
-            plantIdArr[index] = tyPlantId;
 
             await getUserInfo();
             await $.wait(2 * 1000);
-            idArr[index] = id;
 
+            newAuArr[index] = tyau;
+            helpTaskIdArr[index] = helpTaskId;
+            idArr[index] = id;
+            plantIdArr[index] = tyPlantId;
+            helpAdventureIdArr[index] = adventureId;
         }
         if (help) {
             log(`【开始互助】`);
             for (let num1 = 0; num1 < tyhzArr.length; num1++) {
-                msg += `\n第${num1+1}个账号去助力结果：`
-                log(`第${num1+1}个账号去助力结果：`)
+                msg += `\n【第${num1+1}个账号去助力结果】`
+                log(`【第${num1+1}个账号去助力结果】`)
                 for(num2 =0;num2<tyhzArr.length;num2++){
                     if(num1 != num2){
+                        msg += `\n[助力第${num2+1}个账号结果]`
+                        log(`[助力第${num2+1}个账号结果]`)
                         await doHelp(num1,num2);
                         await $.wait(2 * 1000);
-                        await doHelpAdventure(num1,num2);
-                        await $.wait(2 * 1000);
                         await doHelpGiveSunshine(num1,num2);
+                        await $.wait(2 * 1000);
+                        await doHelpAdventure(num1,num2);
                         await $.wait(2 * 1000);
                     }
                 }
@@ -527,13 +530,14 @@ function doHelpAdventure(num1,num2) {
                 let result = eval("("+data+")");
                 let back = result.data;
                 if (result.code == 0) {
-                    log(`去助力账号[${back.friendVoList[0].nickName}]的冒险成功`)
-                    msg += `\n去助力账号[${back.friendVoList[0].nickName}]的冒险成功`
+                    log(`去助力冒险成功`)
+                    msg += `\n去助力冒险成功`
                 } else if (result.code == 1000) {
-                    log(`助力冒险失败，可能是对方有未领取或未结束的冒险`)
-                }else {
-                    log(`助力冒险失败，原因是：${result.message}`)
-                    msg += `\n助力冒险失败，原因是：${result.message}`
+                    log(`去助力冒险失败`)
+                    msg += `\n去助力冒险失败`
+                } else {
+                    log(`去助力冒险失败，原因是：${result.message}`)
+                    msg += `\n去助力冒险失败，原因是：${result.message}`
                 }
 
             } catch (e) {
@@ -578,12 +582,13 @@ function queryAdventure(timeout = 2*1000) {
                 }
                 if (result.code == 0){
                     adventureId = result.data.adventureId;
-                    if (timestampS() >= result.data.endTime) {
+                    if (result.data.endTime != null && timestampS() >= result.data.endTime) {
+                        await $.wait(2000);
                         reportAdventure();
-                    } else if (result.data.endTime != null) {
+                    } else if (result.data.endTime != null && timestampS() < result.data.endTime) {
                         let sleepTime =+ result.data.endTime - timestampS();
                         if (sleepTime <= 60) {
-                            log(`距离冒险结束小于一分钟，等待${sleepTime}秒后收取冒险奖励`)
+                            log(`距离冒险结束小于一分钟分钟，等待${sleepTime}秒后收取冒险奖励`)
                             await $.wait(sleepTime*1000);
                             reportAdventure();
                         } else log(`距离冒险结束还有：${parseInt(sleepTime/3600)}小时${parseInt(sleepTime%3600/60)}分钟${parseInt(sleepTime%60)}秒，大于一分钟，不进行等待`)
