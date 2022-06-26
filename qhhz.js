@@ -6,14 +6,15 @@
  功能：互助
  抓包：api.xiaoyisz.com/qiehuang/ga/public/api/login  这个登录包里 body 部分的 全部
  变量：tyhz='body@xxxx '  多个账号用 @ 或者 换行 分割
- 定时一天两到三次，多跑一下防止助力不成功
- cron: 5 10,11,12 * * *
+ 定时两个小时一次
+ cron: 5 0/2 * * *
 
  6-14 更新了AU获取方式，理论上不会过期了
  6-18 更新了收取植物、种新的植物和推送加上昵称，方便辨认（可能）
  6-22 修复了上报挑战失败、洒阳光失败，更新了种植进度（免得老有人说脚本坏了）
  6-23 更新了助力、助力洒阳光
  6-25 更新了冒险助力
+ 6-26 修复了冒险助力的小bug，建议更改定时两个小时一次
  */
 
 const $ = new Env('统一茄皇互助');
@@ -84,7 +85,7 @@ let doHelpAdventureBack = 0;
             await $.wait(2 * 1000);
 
             await queryAdventure();
-            await $.wait(12 * 1000);
+            await $.wait(10 * 1000);
 
             await getTask();
             await $.wait(2 * 1000);
@@ -587,11 +588,11 @@ function queryAdventure(timeout = 2*1000) {
                         reportAdventure();
                     } else if (result.data.endTime != null && timestampS() < result.data.endTime) {
                         let sleepTime =+ result.data.endTime - timestampS();
-                        if (sleepTime <= 60) {
-                            log(`距离冒险结束小于一分钟分钟，等待${sleepTime}秒后收取冒险奖励`)
+                        if (sleepTime <= 300) {
+                            log(`距离冒险结束小于五分钟，等待${sleepTime}秒后收取冒险奖励`)
                             await $.wait(sleepTime*1000);
                             reportAdventure();
-                        } else log(`距离冒险结束还有：${parseInt(sleepTime/3600)}小时${parseInt(sleepTime%3600/60)}分钟${parseInt(sleepTime%60)}秒，大于一分钟，不进行等待`)
+                        } else log(`距离冒险结束还有：${parseInt(sleepTime/3600)}小时${parseInt(sleepTime%3600/60)}分钟${parseInt(sleepTime%60)}秒，大于五分钟，不进行等待`)
                     }
                 } else log(`查询上一次冒险失败，原因是：${result.message}`)
 
@@ -632,14 +633,20 @@ function reportAdventure(timeout = 2*1000) {
                 }
 
                 let result = JSON.parse(data);
-                let back = eval(result.data);
+                let back = eval(result.data.gaGiftPackageVo);
+                let adventureType = '';
                 if (result.code == 904) {
 
                     refreshAu();
 
                 }
                 if (result.code == 0){
-                    log(`冒险收取成功`)
+                    if (back.infos[0].type == 1) {
+                        adventureType = '番茄'
+                    } else if (back.infos[0].type == 2) {
+                        adventureType = '阳光'
+                    }
+                    log(`冒险收取成功，获得：${back.infos[0].num}${adventureType}`)
                     await $.wait(3000);
                     queryAdventure();
                 } else if (result.code == 500) {
