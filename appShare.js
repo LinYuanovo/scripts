@@ -3,7 +3,7 @@
  日期：6-26
  软件：APP分享
  功能：签到
- 抓包：点一下自己的 http://spare.appshare.muge.info/user/v1/fragmentMeData 这个链接里oaid
+ 抓包：点一下自己的主页 找这个 http://spare.appshare.muge.info/user/v1/fragmentMeData 链接里oaid
  变量：appShare='oaid@oaid '  多个账号用 @ 或者 换行 分割
  定时一天一次
 
