@@ -50,7 +50,7 @@
              let num = index + 1
              log(`\n========= 开始【第 ${num} 个账号】=========\n`)
  
-             hdltk = hdlTkArr[index];
+             hdlTk = hdlTkArr[index];
  
              if (debug) {
                  log(`\n 【debug】 这是你第 ${num} 账号信息:\n ${hdltk}\n`);
