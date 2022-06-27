@@ -588,11 +588,11 @@ function queryAdventure(timeout = 2*1000) {
                         reportAdventure();
                     } else if (result.data.endTime != null && timestampS() < result.data.endTime) {
                         let sleepTime =+ result.data.endTime - timestampS();
-                        if (sleepTime <= 300) {
-                            log(`距离冒险结束小于五分钟，等待${sleepTime}秒后收取冒险奖励`)
+                        if (sleepTime <= 600) {
+                            log(`距离冒险结束小于十分钟，等待${sleepTime}秒后收取冒险奖励`)
                             await $.wait(sleepTime*1000);
                             reportAdventure();
-                        } else log(`距离冒险结束还有：${parseInt(sleepTime/3600)}小时${parseInt(sleepTime%3600/60)}分钟${parseInt(sleepTime%60)}秒，大于五分钟，不进行等待`)
+                        } else log(`距离冒险结束还有：${parseInt(sleepTime/3600)}小时${parseInt(sleepTime%3600/60)}分钟${parseInt(sleepTime%60)}秒，大于十分钟，不进行等待`)
                     }
                 } else log(`查询上一次冒险失败，原因是：${result.message}`)
 
