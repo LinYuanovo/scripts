@@ -59,10 +59,9 @@
                 8 * 60 * 60 * 1000).toLocaleString()} \n=============================================\n`);
 
             await poem();
-
-            log(`\n=================== 共找到 ${dtArr.length} 个账号 ===================`)
             await getVersion();
-            log(`============ 当前版本：${scriptVersion}最新版本：${scriptVersionLatest} ============`)
+            log(`\n============ 当前版本：${scriptVersion}，最新版本：${scriptVersionLatest} ============`)
+            log(`\n=================== 共找到 ${dtArr.length} 个账号 ===================`)
             if (debug) {
                 log(`【debug】 这是你的全部账号数组:\n ${dtArr}`);
             }
@@ -405,11 +404,11 @@ function getVersion(timeout = 3 * 1000) {
         }
         $.get(url, async (err, resp, data) => {
             try {
-                scriptVersionLatest = resp.body.match(/scriptVersion = "([\d\.]+)"/)[1]
+                scriptVersionLatest = data.match(/scriptVersion = "([\d\.]+)"/)[1]
             } catch (e) {
                 $.logErr(e, resp);
             } finally {
-                resolve(getVersion())
+                resolve()
             }
         }, timeout)
     })
