@@ -405,7 +405,7 @@ function getVersion(timeout = 3 * 1000) {
         }
         $.get(url, async (err, resp, data) => {
             try {
-                scriptVersionLatest = resp.body.match(/version = "([\d\.]+)"/)[1]
+                scriptVersionLatest = resp.body.match(/scriptVersion = "([\d\.]+)"/)[1]
             } catch (e) {
                 $.logErr(e, resp);
             } finally {
