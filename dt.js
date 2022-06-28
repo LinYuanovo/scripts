@@ -26,8 +26,8 @@
  const Notify = 1; //0为关闭通知，1为打开通知,默认为1
  const debug = 0; //0为关闭调试，1为打开调试,默认为0
  //////////////////////
- let version = "1.0.0";
- let versionLatest = '';
+ let scriptVersion = "1.0.0";
+ let scriptVersionLatest = '';
  let dt = ($.isNode() ? process.env.dt : $.getdata("dt")) || "";
  let dtArr = [];
  let ck = '';
@@ -62,7 +62,7 @@
 
             log(`\n=================== 共找到 ${dtArr.length} 个账号 ===================`)
             await getVersion();
-            log(`============ 当前版本：${version}最新版本：${versionLatest} ============`)
+            log(`============ 当前版本：${scriptVersion}最新版本：${scriptVersionLatest} ============`)
             if (debug) {
                 log(`【debug】 这是你的全部账号数组:\n ${dtArr}`);
             }
@@ -405,7 +405,7 @@ function getVersion(timeout = 3 * 1000) {
         }
         $.get(url, async (err, resp, data) => {
             try {
-                versionLatest = resp.body.match(/version = "([\d\.]+)"/)[1]
+                scriptVersionLatest = resp.body.match(/version = "([\d\.]+)"/)[1]
             } catch (e) {
                 $.logErr(e, resp);
             } finally {
