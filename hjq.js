@@ -622,12 +622,12 @@ async function GetRewrite() {
         if (hjq) {
             if (hjq.indexOf(ck) == -1) {
                 hjq = hjq + "@" + ck;
+                let List = hjq.split("@");
                 $.setdata(hjq, "hjq");
-                List = hjq.split("@");
-                $.msg(`【${$.name}】` + ` 获取第${hjq.length}个 ck 成功: ${ck} ,不用请自行关闭重写!`);
+                $.msg(`【${$.name}】` + ` 获取第${List.length}个 ck 成功: ${ck} ,不用请自行关闭重写!`);
             }
         } else {
-            $.setdata(hjq, "hjq");
+            $.setdata(ck, "hjq");
             $.msg(`【${$.name}】` + ` 获取第1个 ck 成功: ${ck} ,不用请自行关闭重写!`);
         }
     }
