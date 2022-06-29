@@ -535,7 +535,7 @@ function getInfo() {
 
                 let result = JSON.parse(data);
                 if (result.code == 1) {
-                    if (result.data.integral >= 10 && txBack == 1) {
+                    if (result.data.integral >= 100 && txBack == 1) {
                         log(`金币大于100且填写了提现变量，执行自动提现0.1元`)
                         await $.wait(randomInt(2000,5000));
                         withdraw();
