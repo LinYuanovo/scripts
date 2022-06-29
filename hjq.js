@@ -542,7 +542,11 @@ function getInfo() {
                         withdraw();
                     } else if (result.data.integral >= 100 && txBack == 0) {
                         log(`提示：未填写提现变量，不会执行自动提现`)
-                    } else log(`金币小于100，不执行自动提现`)
+                        msg += `\n提示：未填写提现变量，不会执行自动提现`
+                    } else {
+                        log(`金币小于100，不执行自动提现`)
+                        msg += `\n金币小于100，不执行自动提现`
+                    }
                 } else {
                     log(`获取信息失败，原因是：${result.msg}`)
                 }
@@ -581,7 +585,7 @@ function withdraw(timeout = 3 * 1000) {
                 let result = JSON.parse(data);
                 if (result.code == 1 && result.msg == "兑换成功") {
                     log(`提现成功`)
-                    msg += `提现成功`
+                    msg += `\n提现成功`
                 } else {
                     log(`提现失败，原因是：${result.msg}`)
                 }
