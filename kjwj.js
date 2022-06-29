@@ -1,11 +1,14 @@
-/*
+/**
+ 作者：临渊
  日期：6-15
  网站：科技玩家
- 功能：签到
+ 功能：签到、关注
  变量：kjwj='账号&密码'  多个账号用换行分割 
  定时：一天一次
  cron：10 10 * * *
  因为用Leaf大佬的会莫名其妙报错，所以就用Leaf大佬的源码改了一下，感谢Leaf大佬的源码（大佬的代码真优雅）
+
+ 6-29 增加了关注，但可能会被风控取消
  */
 
  const $ = new Env('科技玩家');
@@ -56,18 +59,23 @@
                  log(`\n 【debug】 这是你第 ${num} 账号信息:\n ${data}\n`);
              }
  
-             msg += `\n第${num}个账号运行结果：\n`
+             msg += `\n第${num}个账号运行结果：`
 
-             log('开始登录');
+             log('【开始登录】');
              await login();
              await $.wait(2 * 1000);
 
              if (loginBack != 1){
 
-                log('开始查询签到状态');
+                log('【开始查询签到状态】');
                 await getSign();
                 await $.wait(2 * 1000);  
 
+                 for (let i = 0; i < 5; i++) {
+                     log(`【开始第${i+1}次关注】`);
+                     await doFollow();
+                     await $.wait(randomInt(15000,25000));
+                 }
              }
 
          }
@@ -229,7 +237,7 @@
 
                     if(result.credit) {
                         log(`账号[${name}]签到成功，获得${result.credit}积分，现有积分：${result.mission.my_credit}`)
-                        msg += `账号[${name}]签到成功，获得${result.credit}积分，现有积分：${result.mission.my_credit}`
+                        msg += `\n账号[${name}]签到成功，获得${result.credit}积分，现有积分：${result.mission.my_credit}`
                     }
 
                 }
@@ -241,9 +249,61 @@
             }
         }, timeout)
     })
- } 
+ }
 
- // ============================================变量检查============================================ \\
+/**
+ * 关注
+ */
+function doFollow(timeout = 3 * 1000) {
+    return new Promise((resolve) => {
+        let user_id = randomInt(0,1000)
+        let url = {
+            url: `https://www.kejiwanjia.com/wp-json/b2/v1/AuthorFollow`,
+            headers: {
+                "Host": "www.kejiwanjia.com",
+                "Connection": "keep-alive",
+                "Accept": "application/json, text/plain, */*",
+                "User-Agent": "Mozilla/5.0 (Linux; Android 10; MI 8 Build/QKQ1.190828.002;) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/83.0.4103.101 Mobile Safari/537.36",
+                "Content-Type": "application/x-www-form-urlencoded",
+                "Authorization": `Bearer ${token}`,
+                "Cookie": `b2_token=${token};`
+            },
+            body: `user_id=${user_id}`,
+        }
+
+        if (debug) {
+            log(`\n【debug】=============== 这是 关注 请求 url ===============`);
+            log(JSON.stringify(url));
+        }
+
+        $.post(url, async (error, response, data) => {
+            try {
+                if (debug) {
+                    log(`\n\n【debug】===============这是 关注 返回data==============`);
+                    log(data)
+                }
+
+                if (data == "true") {
+
+                    log(`账号[${name}]关注id[${user_id}]用户成功`)
+                    msg += `\n账号[${name}]关注id[${user_id}]用户成功`
+
+                } else {
+
+                    log(`账号[${name}]关注id[${user_id}]用户失败`)
+                    msg += `\n账号[${name}]关注id[${user_id}]用户失败`
+
+                }
+
+            } catch (e) {
+                log(e)
+            } finally {
+                resolve();
+            }
+        }, timeout)
+    })
+}
+// ============================================变量检查============================================ \\
  async function Envs() {
      if (kjwj) {
          if (kjwj.indexOf("\n") != -1) {
