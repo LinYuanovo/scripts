@@ -304,12 +304,22 @@ async function stealFriendSunshine(timeout = 2 * 1000) {
               const stealList = content.filter((it) => it.stealAble);
               log("可偷好友列表为", stealList.length);
               if (stealList.length > 0) {
-                const stealNums = stealList.map(async (it) => {
-                  //--2 开始偷，偷完汇总
-                  const stealNum = await stealSunshine(it.userId);
-                  await $.wait(2 * 1000);
-                  return stealNum;
-                });
+                const stealNums = await stealList.reduce(
+                  async (previousValue, it) => {
+                    // 这里是关键，需要 await 前一个 task 执行的结果
+                    // 实际上每个 reduce 每个循环执行都相当于 new Promise
+                    // 但第二次执行可以拿到上一次执行的结果，也就是上一个 Promise
+                    // 每次执行只要 await 上一个 Promise，即可实现依次执行
+                    let stealNums = [];
+                    await previousValue;
+                    const stealNum = await stealSunshine(it.userId);
+                    await $.wait(2 * 1000);
+                    stealNums.push(stealNum);
+                    return stealNums;
+                  },
+                  []
+                );
+                console.log("偷取的数据", stealNums);
                 //--3 汇总偷取的数量
                 const stealAll = stealNums.reduce((a, b) => a + b, 0);
                 resolve(stealAll);
@@ -318,11 +328,14 @@ async function stealFriendSunshine(timeout = 2 * 1000) {
               log(`没有好友，退出`);
               resolve(0);
             }
-          } else log(`遇到错误，原因是：${result.message}`);
+          } else {
+            log(`遇到错误，原因是：${result.message}`);
+            resolve(0);
+          }
         } catch (e) {
           log(e);
         } finally {
-          resolve();
+          resolve(0);
         }
       },
       timeout
@@ -330,24 +343,24 @@ async function stealFriendSunshine(timeout = 2 * 1000) {
   });
 }
 /**
- * 偷朋友阳光
+ * 偷好友阳光
  */
 function stealSunshine(userId, timeout = 2 * 1000) {
-  let url = {
-    url:
-      `http://api.xiaoyisz.com/qiehuang/ga/user/daily/steal?friendUserId=` +
-      userId,
-    headers: {
-      Host: "api.xiaoyisz.com",
-      authorization: `${tyau}`,
-      "user-agent": `${ua}`,
-      "Content-Type": "application/json",
-    },
-  };
   return new Promise((resolve) => {
+    let url = {
+      url:
+        `http://api.xiaoyisz.com/qiehuang/ga/user/daily/steal?friendUserId=` +
+        userId,
+      headers: {
+        Host: "api.xiaoyisz.com",
+        authorization: `${tyau}`,
+        "user-agent": `${ua}`,
+        "Content-Type": "application/json",
+      },
+    };
     if (debug) {
       log(
-        `\n【debug】=============== 这是 偷朋友阳光 请求 url ===============`
+        `\n【debug】=============== 这是 偷好友阳光 请求 url ===============`
       );
       log(JSON.stringify(url));
     }
@@ -358,7 +371,7 @@ function stealSunshine(userId, timeout = 2 * 1000) {
         try {
           if (debug) {
             log(
-              `\n\n【debug】===============这是 偷朋友阳光 返回data==============`
+              `\n\n【debug】===============这是 偷好友阳光 返回data==============`
             );
             log(data);
           }
@@ -368,15 +381,17 @@ function stealSunshine(userId, timeout = 2 * 1000) {
             refreshAu();
           } else if (result.code === 0) {
             const { data: stealData } = result;
-            if (stealData > 0) {
+            if (stealData >= 0) {
               log(`偷到好友阳光 ${stealData}g`);
-              resolve(stealData);
-            } else resolve(0);
-          } else log(`遇到错误，原因是：${result.message}`);
+              return resolve(stealData);
+            } else return resolve(0);
+          } else {
+            log(`遇到错误，原因是：${JSON.stringify(result)}`);
+            resolve(0);
+          }
         } catch (e) {
           log(e);
-        } finally {
-          resolve();
+          resolve(0);
         }
       },
       timeout
