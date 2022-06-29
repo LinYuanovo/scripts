@@ -546,36 +546,36 @@ function getInfo() {
                     integral = result.data.integral;
                     if (result.data.integral >= 100 && txBack == 1) {
                         if (autoWithdraw) {
-                            if (integral >= 100) {
-                                log(`金币大于100且填写了提现变量，执行自动提现0.1元`)
+                            if (integral >= 10000) {
+                                log(`金币大于10000且填写了提现变量，执行自动提现10元`)
+                                integral -= 10000;
                                 await $.wait(randomInt(2000,5000));
-                                integral -= 100;
-                                withdraw(0);
-                            } else if (integral >= 200) {
-                                log(`金币大于200且填写了提现变量，执行自动提现0.2元`)
+                                withdraw(5);
+                            } else if (integral >= 5000) {
+                                log(`金币大于5000且填写了提现变量，执行自动提现0.2元`)
                                 await $.wait(randomInt(2000,5000));
-                                integral -= 200;
-                                withdraw(1);
-                            } else if (integral >= 500) {
-                                log(`金币大于500且填写了提现变量，执行自动提现0.5元`)
-                                integral -= 500;
-                                await $.wait(randomInt(2000,5000));
-                                withdraw(2);
+                                integral -= 5000;
+                                withdraw(4);
                             } else if (integral >= 888) {
                                 log(`金币大于888且填写了提现变量，执行自动提现1元`)
                                 integral -= 888;
                                 await $.wait(randomInt(2000,5000));
                                 withdraw(3);
-                            } else if (integral >= 5000) {
-                                log(`金币大于5000且填写了提现变量，执行自动提现5元`)
-                                integral -= 5000;
+                            } else if (integral >= 500) {
+                                log(`金币大于500且填写了提现变量，执行自动提现0.5元`)
+                                integral -= 500;
                                 await $.wait(randomInt(2000,5000));
-                                withdraw(4);
-                            } else if (integral >= 10000) {
-                                log(`金币大于10000且填写了提现变量，执行自动提现10元`)
-                                integral -= 10000;
+                                withdraw(2);
+                            } else if (integral >= 200) {
+                                log(`金币大于200且填写了提现变量，执行自动提现0.2元`)
+                                integral -= 200;
                                 await $.wait(randomInt(2000,5000));
-                                withdraw(5);
+                                withdraw(1);
+                            } else if (integral >= 100) {
+                                log(`金币大于100且填写了提现变量，执行自动提现10元`)
+                                integral -= 100;
+                                await $.wait(randomInt(2000,5000));
+                                withdraw(0);
                             }
                         }
                     } else if (result.data.integral >= 100 && txBack == 0) {
