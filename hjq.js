@@ -27,6 +27,7 @@
  const Notify = 1; //0为关闭通知，1为打开通知,默认为1
  const debug = 0; //0为关闭调试，1为打开调试,默认为0
  const uaNum = 1; //随机UA，从0-20随便选一个填上去
+ const autoWithdraw = 1; //0为关闭自动提现，1为打开自动提现,默认为1
  //////////////////////
  let scriptVersion = "1.0.1";
  let scriptVersionLatest = '';
@@ -39,10 +40,11 @@
  let hjqTXArr = [];
  let tx = '';
  let txBack = 0;
- let txIdArr = ["140","318","139","297"];//0.1 0.2 0.5 1
+ let txIdArr = ["140","318","139","297","319","320"];//0.1 0.2 0.5 1 5 10
  let txNum = 0;
  let msg = '';
  let ck = '';
+ let integral = 0;
  const User_Agents = [
     "Mozilla/5.0 (Linux; Android 10; ONEPLUS A5010 Build/QKQ1.191014.012; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/77.0.3865.120 MQQBrowser/6.2 TBS/045230 Mobile Safari/537.36",
     "Mozilla/5.0 (iPhone; CPU iPhone OS 14_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148",
@@ -163,6 +165,9 @@
                      log('【开始查询信息】');
                      await getInfo();
                      await $.wait(2 * 1000);
+
+                     log(`账号[${num}]金币余额为：${integral}`)
+                     msg += `\n账号[${num}]金币余额为：${integral}`
 
                  }
 
@@ -538,23 +543,40 @@ function getInfo() {
 
                 let result = JSON.parse(data);
                 if (result.code == 1) {
+                    integral = result.data.integral;
                     if (result.data.integral >= 100 && txBack == 1) {
-                        if (result.data.integral >= 100) {
-                            log(`金币大于100且填写了提现变量，执行自动提现0.1元`)
-                            await $.wait(randomInt(2000,5000));
-                            withdraw(0);
-                        } else if (result.data.integral >= 200) {
-                            log(`金币大于200且填写了提现变量，执行自动提现0.2元`)
-                            await $.wait(randomInt(2000,5000));
-                            withdraw(1);
-                        } else if (result.data.integral >= 500) {
-                            log(`金币大于500且填写了提现变量，执行自动提现0.5元`)
-                            await $.wait(randomInt(2000,5000));
-                            withdraw(2);
-                        } else if (result.data.integral >= 888) {
-                            log(`金币大于888且填写了提现变量，执行自动提现1元`)
-                            await $.wait(randomInt(2000,5000));
-                            withdraw(3);
+                        if (autoWithdraw) {
+                            if (integral >= 100) {
+                                log(`金币大于100且填写了提现变量，执行自动提现0.1元`)
+                                await $.wait(randomInt(2000,5000));
+                                integral -= 100;
+                                withdraw(0);
+                            } else if (integral >= 200) {
+                                log(`金币大于200且填写了提现变量，执行自动提现0.2元`)
+                                await $.wait(randomInt(2000,5000));
+                                integral -= 200;
+                                withdraw(1);
+                            } else if (integral >= 500) {
+                                log(`金币大于500且填写了提现变量，执行自动提现0.5元`)
+                                integral -= 500;
+                                await $.wait(randomInt(2000,5000));
+                                withdraw(2);
+                            } else if (integral >= 888) {
+                                log(`金币大于888且填写了提现变量，执行自动提现1元`)
+                                integral -= 888;
+                                await $.wait(randomInt(2000,5000));
+                                withdraw(3);
+                            } else if (integral >= 5000) {
+                                log(`金币大于5000且填写了提现变量，执行自动提现5元`)
+                                integral -= 5000;
+                                await $.wait(randomInt(2000,5000));
+                                withdraw(4);
+                            } else if (integral >= 10000) {
+                                log(`金币大于10000且填写了提现变量，执行自动提现10元`)
+                                integral -= 10000;
+                                await $.wait(randomInt(2000,5000));
+                                withdraw(5);
+                            }
                         }
                     } else if (result.data.integral >= 100 && txBack == 0) {
                         log(`提示：未填写提现变量，不会执行自动提现`)
