@@ -156,6 +156,7 @@
                              await $.wait(randomInt(3000,6000));
                          }
                      }
+                     subTaskNum = 0;
 
                      log('【开始查询信息】');
                      await getInfo();
