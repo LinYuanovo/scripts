@@ -28,7 +28,7 @@
  const debug = 0; //0为关闭调试，1为打开调试,默认为0
  const uaNum = 1; //随机UA，从0-20随便选一个填上去
  //////////////////////
- let scriptVersion = "1.0.0";
+ let scriptVersion = "1.0.1";
  let scriptVersionLatest = '';
  let hjq = ($.isNode() ? process.env.hjq : $.getdata("hjq")) || "";
  let hjqArr = [];
@@ -39,6 +39,8 @@
  let hjqTXArr = [];
  let tx = '';
  let txBack = 0;
+ let txIdArr = ["140","318","139","297"];//0.1 0.2 0.5 1
+ let txNum = 0;
  let msg = '';
  let ck = '';
  const User_Agents = [
@@ -537,9 +539,23 @@ function getInfo() {
                 let result = JSON.parse(data);
                 if (result.code == 1) {
                     if (result.data.integral >= 100 && txBack == 1) {
-                        log(`金币大于100且填写了提现变量，执行自动提现0.1元`)
-                        await $.wait(randomInt(2000,5000));
-                        withdraw();
+                        if (result.data.integral >= 100) {
+                            log(`金币大于100且填写了提现变量，执行自动提现0.1元`)
+                            await $.wait(randomInt(2000,5000));
+                            withdraw(0);
+                        } else if (result.data.integral >= 200) {
+                            log(`金币大于200且填写了提现变量，执行自动提现0.2元`)
+                            await $.wait(randomInt(2000,5000));
+                            withdraw(1);
+                        } else if (result.data.integral >= 500) {
+                            log(`金币大于500且填写了提现变量，执行自动提现0.5元`)
+                            await $.wait(randomInt(2000,5000));
+                            withdraw(2);
+                        } else if (result.data.integral >= 888) {
+                            log(`金币大于888且填写了提现变量，执行自动提现1元`)
+                            await $.wait(randomInt(2000,5000));
+                            withdraw(3);
+                        }
                     } else if (result.data.integral >= 100 && txBack == 0) {
                         log(`提示：未填写提现变量，不会执行自动提现`)
                         msg += `\n提示：未填写提现变量，不会执行自动提现`
@@ -561,12 +577,12 @@ function getInfo() {
 }
 
 /**
- * 提现0.1元
+ * 提现
  */
-function withdraw(timeout = 3 * 1000) {
+function withdraw(num) {
     return new Promise((resolve) => {
         let url = {
-            url: encodeURI(`https://point.jrongjie.com/web/exchange/receiveGoods?exchange_id=140&type_id=26&user_phone=&account=${tx[0]}&real_name=${tx[1]}`),
+            url: encodeURI(`https://point.jrongjie.com/web/exchange/receiveGoods?exchange_id=${txIdArr[num]}&type_id=26&user_phone=&account=${tx[0]}&real_name=${tx[1]}`),
             headers: {"Host":"point.jrongjie.com","accept":"application/json, text/plain, */*","authorization":`${hjqAU}`,"user-agent":`${ua}`},
         }
 
@@ -595,7 +611,7 @@ function withdraw(timeout = 3 * 1000) {
             } finally {
                 resolve();
             }
-        }, timeout)
+        })
     })
 }
 
@@ -607,7 +623,7 @@ async function GetRewrite() {
             if (hjq.indexOf(ck) == -1) {
                 hjq = hjq + "@" + ck;
                 $.setdata(hjq, "hjq");
-                List = dt.split("@");
+                List = hjq.split("@");
                 $.msg(`【${$.name}】` + ` 获取第${hjq.length}个 ck 成功: ${ck} ,不用请自行关闭重写!`);
             }
         } else {
