@@ -171,6 +171,7 @@
                      log(`账号[${num}]金币余额为：${integral}`)
                      msg += `\n账号[${num}]金币余额为：${integral}`
 
+                     await $.wait(randomInt(5000,10000));
                  }
 
              }
