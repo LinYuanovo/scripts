@@ -127,7 +127,7 @@ let cash = 0.00;
                 await $.wait(randomInt(3000,5000));
 
                 for (let i in readBookWatchVideoStatus) {
-                    while (!readBookWatchVideoStatus[i]) {
+                    if (!readBookWatchVideoStatus[i]) {
                         await $.wait(randomInt(3000,5000));
                         await readBookWatchVideo(i);
                     }
