@@ -7,7 +7,7 @@
  示例：qrsn=xxx_02:00:00:00:00:00;ywguid=xxx;ywkey=xxx
  变量格式：export qqydCK='xxx@xxx'  多个账号用 @ 或者 换行 分割
  定时：一天五次
- cron：30 0-23/5 * * *
+ cron： 30 0-23/5 * * *
 
  [task_local]
  #QQ阅读
