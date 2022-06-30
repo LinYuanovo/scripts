@@ -128,6 +128,8 @@
 
                  msg += `\n第${num}个账号运行结果：`
 
+                 await $.wait(randomInt(5000,10000));
+
                  log('【开始登录】');
                  await login();
                  await $.wait(2 * 1000);
@@ -552,7 +554,7 @@ function getInfo() {
                                 await $.wait(randomInt(2000,5000));
                                 withdraw(5);
                             } else if (integral >= 5000) {
-                                log(`金币大于5000且填写了提现变量，执行自动提现0.2元`)
+                                log(`金币大于5000且填写了提现变量，执行自动提现5元`)
                                 await $.wait(randomInt(2000,5000));
                                 integral -= 5000;
                                 withdraw(4);
@@ -572,7 +574,7 @@ function getInfo() {
                                 await $.wait(randomInt(2000,5000));
                                 withdraw(1);
                             } else if (integral >= 100) {
-                                log(`金币大于100且填写了提现变量，执行自动提现10元`)
+                                log(`金币大于100且填写了提现变量，执行自动提现0.1元`)
                                 integral -= 100;
                                 await $.wait(randomInt(2000,5000));
                                 withdraw(0);
