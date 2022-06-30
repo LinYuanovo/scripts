@@ -1,4 +1,4 @@
-/*
+/**
  作者：临渊
  日期：6-30
  软件：QQ阅读
@@ -7,11 +7,13 @@
  示例：qrsn=xxx_02:00:00:00:00:00;ywguid=xxx;ywkey=xxx
  变量格式：export qqydCK='xxx@xxx'  多个账号用 @ 或者 换行 分割
  定时：一天五次
- cron： 30 8,12,14,16,20 * * *
+ cron: 30 0-23/5 * * *
+
+ 默认会填我的邀请码，如果介意请在脚本里把 helpAuthor 改成 0 即可
 
  [task_local]
  #QQ阅读
- 30 8,12,14,16,20 * * * https://raw.githubusercontent.com/LinYuanovo/scripts/main/qqyd.js, tag=QQ阅读, enabled=true
+ 30 0-23/5 * * * https://raw.githubusercontent.com/LinYuanovo/scripts/main/qqyd.js, tag=QQ阅读, enabled=true
  [rewrite_local]
  https://eventv3.reader.qq.com/activity/pkg11955/initV4 url script-request-header https://raw.githubusercontent.com/LinYuanovo/scripts/main/qqyd.js
  [MITM]
@@ -24,9 +26,10 @@ const notify = $.isNode() ? require('./sendNotify') : '';
 const {log} = console;
 const Notify = 0; //0为关闭通知，1为打开通知,默认为1
 const debug = 0; //0为关闭调试，1为打开调试,默认为0
+const helpAuthor = 1; //0为不填写作者邀请码，1为填写作者邀请码,默认为1
 const doNewUserTask = 0; //0为不做一次性任务，1为做一次性任务,默认为0
 //////////////////////
-let scriptVersion = "1.0.0";
+let scriptVersion = "1.0.1";
 let scriptVersionLatest = '';
 let qqydCK = ($.isNode() ? process.env.qqydCK : $.getdata("qqydCK")) || "";
 let qqydCKArr = [];
@@ -155,6 +158,9 @@ let cash = 0.00;
                     }
                 }
 
+                //填写作者邀请码
+                await invite();
+                await $.wait(randomInt(3000,5000));
                 //获取余额信息
                 await getInfo();
                 await $.wait(randomInt(3000,5000));
@@ -857,6 +863,38 @@ function pickLottery(timeout = 3 * 1000) {
     })
 }
 
+/**
+ * 填写邀请码
+ */
+function invite(timeout = 3 * 1000) {
+    return new Promise((resolve) => {
+        let url = {
+            url: `${activityUrl}/inivite/fillcode?code=564785656`,
+            headers: {"Cookie":`${qqydCK}`},
+        }
+
+        if (debug) {
+            log(`\n【debug】=============== 这是 填写邀请码 请求 url ===============`);
+            log(JSON.stringify(url));
+        }
+
+        $.get(url, async (error, response, data) => {
+            try {
+                if (debug) {
+                    log(`\n\n【debug】===============这是 填写邀请码 返回data==============`);
+                    log(data)
+                }
+
+                let result = JSON.parse(data);
+
+            } catch (e) {
+                log(e)
+            } finally {
+                resolve();
+            }
+        }, timeout)
+    })
+}
 // ============================================重写============================================ \\
 async function GetRewrite() {
     if ($request.url.indexOf("activity/pkg11955") > -1) {
