@@ -7,11 +7,11 @@
  示例：qrsn=xxx_02:00:00:00:00:00;ywguid=xxx;ywkey=xxx
  变量格式：export qqydCK='xxx@xxx'  多个账号用 @ 或者 换行 分割
  定时：一天五次
- cron： 30 0-23/5 * * *
+ cron： 30 8,12,14,16,20 * * *
 
  [task_local]
  #QQ阅读
- 30 0-23/5 * * * https://raw.githubusercontent.com/LinYuanovo/scripts/main/qqyd.js, tag=QQ阅读, enabled=true
+ 30 8,12,14,16,20 * * * https://raw.githubusercontent.com/LinYuanovo/scripts/main/qqyd.js, tag=QQ阅读, enabled=true
  [rewrite_local]
  https://eventv3.reader.qq.com/activity/pkg11955/initV4 url script-request-header https://raw.githubusercontent.com/LinYuanovo/scripts/main/qqyd.js
  [MITM]
