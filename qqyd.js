@@ -29,7 +29,7 @@ const debug = 0; //0为关闭调试，1为打开调试,默认为0
 const helpAuthor = 1; //0为不填写作者邀请码，1为填写作者邀请码,默认为1
 const doNewUserTask = 0; //0为不做一次性任务，1为做一次性任务,默认为0
 //////////////////////
-let scriptVersion = "1.0.1";
+let scriptVersion = "1.0.2";
 let scriptVersionLatest = '';
 let qqydCK = ($.isNode() ? process.env.qqydCK : $.getdata("qqydCK")) || "";
 let qqydCKArr = [];
