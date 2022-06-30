@@ -9,7 +9,7 @@
  定时：一天五次
  cron: 30 0-23/5 * * *
 
- 默认会填我的邀请码，如果介意请在脚本里把 helpAuthor 改成 0 即可
+ 默认账号1会填我的邀请码，如果介意请在脚本里把 helpAuthor 改成 0 即可
 
  [task_local]
  #QQ阅读
@@ -24,7 +24,7 @@
 const $ = new Env('QQ阅读');
 const notify = $.isNode() ? require('./sendNotify') : '';
 const {log} = console;
-const Notify = 0; //0为关闭通知，1为打开通知,默认为1
+const Notify = 1; //0为关闭通知，1为打开通知,默认为1
 const debug = 0; //0为关闭调试，1为打开调试,默认为0
 const helpAuthor = 1; //0为不填写作者邀请码，1为填写作者邀请码,默认为1
 const doNewUserTask = 0; //0为不做一次性任务，1为做一次性任务,默认为0
@@ -159,8 +159,10 @@ let cash = 0.00;
                 }
 
                 //填写作者邀请码
-                await invite();
-                await $.wait(randomInt(3000,5000));
+                if (helpAuthor == 1 && num == 1) {
+                    await invite();
+                    await $.wait(randomInt(3000,5000));
+                }
                 //获取余额信息
                 await getInfo();
                 await $.wait(randomInt(3000,5000));
