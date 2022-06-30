@@ -29,7 +29,7 @@
  const uaNum = 1; //随机UA，从0-20随便选一个填上去
  const autoWithdraw = 1; //0为关闭自动提现，1为打开自动提现,默认为1
  //////////////////////
- let scriptVersion = "1.0.1";
+ let scriptVersion = "1.0.2";
  let scriptVersionLatest = '';
  let hjq = ($.isNode() ? process.env.hjq : $.getdata("hjq")) || "";
  let hjqArr = [];
@@ -381,7 +381,7 @@ function doSign() {
                 if (result.code == 1) {
                     log(`普通签到成功，执行领取`)
                     await $.wait(randomInt(2000,5000))
-                    getTaskReward();
+                    getSignReward();
                 } else if (result.code == -1) {
                     log(`普通签到失败，已签到过`)
                 } else {
