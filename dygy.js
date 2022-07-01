@@ -91,7 +91,8 @@ let ua = User_Agents[uaNum];
                 8 * 60 * 60 * 1000).toLocaleString()} \n=============================================\n`);
 
             await poem();
-
+            await getVersion();
+            log(`\n============ 当前版本：${scriptVersion}  最新版本：${scriptVersionLatest} ============`)
             log(`\n=================== 共找到 ${ddgyCkArr.length} 个账号 ===================`)
 
             if (debug) {
