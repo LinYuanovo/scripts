@@ -29,7 +29,7 @@
  const uaNum = 1; //随机UA，从0-20随便选一个填上去
  const autoWithdraw = 1; //0为关闭自动提现，1为打开自动提现,默认为1
  //////////////////////
- let scriptVersion = "1.0.2";
+ let scriptVersion = "1.0.3";
  let scriptVersionLatest = '';
  let hjq = ($.isNode() ? process.env.hjq : $.getdata("hjq")) || "";
  let hjqArr = [];
@@ -143,9 +143,15 @@
                      log('【开始普通签到】');
                      await doSign();
                      await $.wait(2 * 1000);
+                     //领取普通签到
+                     await getSignReward();
+                     await $.wait(2 * 1000);
 
                      log('【开始翻倍签到】');
                      await doDoubleSign();
+                     await $.wait(2 * 1000);
+                     //领取翻倍签到
+                     await getDoubleSignReward();
                      await $.wait(2 * 1000);
 
                      log('【开始执行任务】')
@@ -382,9 +388,7 @@ function doSign() {
 
                 let result = JSON.parse(data);
                 if (result.code == 1) {
-                    log(`普通签到成功，执行领取`)
-                    await $.wait(randomInt(2000,5000))
-                    getSignReward();
+                    log(`普通签到成功`)
                 } else if (result.code == -1) {
                     log(`普通签到失败，已签到过`)
                 } else {
@@ -406,7 +410,7 @@ function doSign() {
 function getSignReward(timeout = 3 * 1000) {
     return new Promise((resolve) => {
         let url = {
-            url: `https://point.jrongjie.com/web/signin/setInfo`,
+            url: `https://point.jrongjie.com/web/signin/getRewa`,
             headers: {"Host":"point.jrongjie.com","accept":"application/json, text/plain, */*","authorization":`${hjqAU}`,"user-agent":`${ua}`},
         }
 
@@ -465,9 +469,7 @@ function doDoubleSign() {
                 let result = JSON.parse(data);
                 if (result.code == 1) {
                     if (result.msg != "重复签到") {
-                        log(`翻倍签到成功，执行领取`)
-                        await $.wait(randomInt(2000,5000))
-                        getDoubleSignReward();
+                        log(`翻倍签到成功`)
                     } else log(`翻倍签到失败，已签到过`)
                 } else {
                     log(`翻倍签到失败，原因是：${result.msg}`)
