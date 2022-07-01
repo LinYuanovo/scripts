@@ -38,6 +38,7 @@ let taskType = [];
 let coin = 0;
 let beforeCoin = 0;
 let afterCoin = 0;
+let signTaskId = 0;
 
 !(async () => {
 
@@ -88,10 +89,6 @@ let afterCoin = 0;
                 await $.wait(2 * 1000);
                 beforeCoin = coin;
 
-                log('开始签到');
-                await doSign();
-                await $.wait(2 * 1000);
-
                 log('开始获取PC任务');
                 await getPCTaskList();
                 await $.wait(2 * 1000);
@@ -106,6 +103,10 @@ let afterCoin = 0;
 
                 log('开始获取手机任务');
                 await getHTaskList();
+                await $.wait(2 * 1000);
+
+                log('开始签到');
+                await doSign();
                 await $.wait(2 * 1000);
 
                 log('开始做手机浏览任务');
@@ -231,7 +232,7 @@ function doSign(timeout = 3 * 1000) {
         let url = {
             url: `https://b2b.homedo.com/mall-pcweb-compositeservice/bff/customPavilion/signinDoTask`,
             headers: {"Host":"b2b.homedo.com","Accept":"application/json, text/javascript, */*; q=0.01","User-Agent":"Mozilla/5.0 (Linux; Android 10; MI 8 Build/QKQ1.190828.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/83.0.4103.101 Mobile Safari/537.36;webank/h5face;webank/1.0;netType:NETWORK_WIFI;appVersion:244;packageName:com.homedo.homedoapp","Content-Type":"application/json","Accept-Encoding":"gzip, deflate","Accept-Language":"zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7"},
-            body: `{"accountId":${hmdId},"platform":2,"taskId":12}`,
+            body: `{"accountId":${hmdId},"platform":2,"taskId":${signTaskId}}`,
         }
 
         if (debug) {
@@ -250,7 +251,7 @@ function doSign(timeout = 3 * 1000) {
                 if (result.respCode == 0000) {
 
                     log(`账号[${name}]签到${result.respDesc}`)
-                    
+
                 } else {
 
                     log(`账号[${name}]签到失败，原因是：${result.respDesc}`)
@@ -354,6 +355,7 @@ function getHTaskList(timeout = 3 * 1000) {
                         integral[i] = back.completeTaskRespList[i].pageIntegral;
                         taskId[i] = back.completeTaskRespList[i].taskId;
                         taskName[i] = back.completeTaskRespList[i].taskName;
+                        signTaskId = back.signInTaskResp.taskId;
                     }
 
                 } else {
