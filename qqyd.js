@@ -6,8 +6,8 @@
  抓包：我的->福利，抓 eventv3.reader.qq.com 域名下的Cookie，只需要 qrsn ywguid ywkey 三个参数
  示例：qrsn=xxx_02:00:00:00:00:00;ywguid=xxx;ywkey=xxx
  变量格式：export qqydCK='xxx@xxx'  多个账号用 @ 或者 换行 分割
- 定时：一天五次
- cron: 30 0-23/5 * * *
+ 定时：一天十次
+ cron: 30 9-19 * * *
 
  默认账号1会填我的邀请码，如果介意请在脚本里把 helpAuthor 改成 0 即可
 
