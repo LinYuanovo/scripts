@@ -29,7 +29,7 @@
  const uaNum = 1; //随机UA，从0-20随便选一个填上去
  const autoWithdraw = 1; //0为关闭自动提现，1为打开自动提现,默认为1
  //////////////////////
- let scriptVersion = "1.0.3";
+ let scriptVersion = "1.0.4";
  let scriptVersionLatest = '';
  let hjq = ($.isNode() ? process.env.hjq : $.getdata("hjq")) || "";
  let hjqArr = [];
@@ -40,7 +40,7 @@
  let hjqTXArr = [];
  let tx = '';
  let txBack = 0;
- let txIdArr = ["140","318","139","297","319","320"];//0.1 0.2 0.5 1 5 10
+ let txIdArr = ["140","318","139","107","319","320"];//0.1 0.2 0.5 1 5 10
  let txNum = 0;
  let msg = '';
  let ck = '';
@@ -561,9 +561,9 @@ function getInfo() {
                                 await $.wait(randomInt(2000,5000));
                                 integral -= 5000;
                                 withdraw(4);
-                            } else if (integral >= 888) {
+                            } else if (integral >= 1000) {
                                 log(`金币大于888且填写了提现变量，执行自动提现1元`)
-                                integral -= 888;
+                                integral -= 1000;
                                 await $.wait(randomInt(2000,5000));
                                 withdraw(3);
                             } else if (integral >= 500) {
