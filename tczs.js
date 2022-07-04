@@ -5,11 +5,11 @@
  抓包：开着抓包软件进活动，抓 https://sgame.moxigame.cn/planttree_tc//game/local/logincheck 这条链接下请求体的 body 全部
  示例：{"info":{"appId":"xx","userId":"xx","activeId":"xx","startTime":xx,"endTime":xx,"time":"xx","openId":"xx=","nickname":"临渊","pltId":"xx","avatar":"xx","platform":"{\\"money\\":0,\\"moneyId\\":\\"xx\\"}","sign":"xx"},"sourceChannel":"xx"}
  变量格式：export tczs='xxx@xxx '  如果抓到的没有两个\，自己加一个就好了，不行的话删掉\再试试，多个账号用 @ 或者 换行 分割
- Cron：10 9-17 * * *
+ Cron：10 9-14 * * *
 
  [task_local]
  #同程旅行种树
- 13,43 8-18 * * * https://raw.githubusercontent.com/LinYuanovo/scripts/main/tczs.js, tag=同程旅行种树, enabled=true
+ 10 9-14 * * * https://raw.githubusercontent.com/LinYuanovo/scripts/main/tczs.js, tag=同程旅行种树, enabled=true
  [rewrite_local]
  https://sgame.moxigame.cn/planttree_tc//game/local/logincheck url script-request-header https://raw.githubusercontent.com/LinYuanovo/scripts/main/tczs.js
  [MITM]
