@@ -3,13 +3,13 @@
  日期：7-2
  微信小程序：同程旅行 （入口：里程商城->每日签到->祈愿树）
  抓包：开着抓包软件进活动，抓 https://sgame.moxigame.cn/planttree_tc//game/local/logincheck 这条链接下请求体的 body 全部
- 示例：{"info":{"appId":"xx","userId":"xx","activeId":"xx","startTime":xx,"endTime":xx,"time":"xx","openId":"xx=","nickname":"临渊","pltId":"xx","avatar":"xx","platform":"{\\"money\\":0,\\"moneyId\\":\\"xx\\"}","sign":"xx"},"sourceChannel":"xx"}
- 变量格式：export tczs='xxx@xxx '  如果抓到的没有两个\，自己加一个就好了，不行的话删掉\再试试，多个账号用 @ 或者 换行 分割
+ 示例：{"info":{"appId":"xx","userId":"xx","activeId":"xx","startTime":xx,"endTime":xx,"time":"xx","openId":"xx=","nickname":"临渊","pltId":"xx","avatar":"xx","platform":"{\"money\":0,\"moneyId\":\"xx\"}","sign":"xx"},"sourceChannel":"xx"}
+ 变量格式：export tczs='xxx@xxx '  最好放配置文件，用单引号括起来，如果抓到的跑不了，把\换成\\，不行的话删掉\再试试，多个账号用 @ 或者 换行 分割
  Cron：10 9-14 * * *
 
  [task_local]
  #同程旅行种树
- 10 9-14 * * * https://raw.githubusercontent.com/LinYuanovo/scripts/main/tczs.js, tag=同程旅行种树, enabled=true
+ 13,43 8-18 * * * https://raw.githubusercontent.com/LinYuanovo/scripts/main/tczs.js, tag=同程旅行种树, enabled=true
  [rewrite_local]
  https://sgame.moxigame.cn/planttree_tc//game/local/logincheck url script-request-header https://raw.githubusercontent.com/LinYuanovo/scripts/main/tczs.js
  [MITM]
@@ -22,7 +22,7 @@
  const Notify = 1; //0为关闭通知，1为打开通知,默认为1
  const debug = 0; //0为关闭调试，1为打开调试,默认为0
  //////////////////////
- let scriptVersion = "1.0.1";
+ let scriptVersion = "1.0.2";
  let scriptVersionLatest = '';
  let tczs = ($.isNode() ? process.env.tczs : $.getdata("tczs")) || "";
  let tczsArr = [];
@@ -54,7 +54,7 @@
  
              await poem();
              await getVersion();
-             log(`\n============ 当前版本：${scriptVersion}，最新版本：${scriptVersionLatest} ============`)
+             log(`\n============ 当前版本：${scriptVersion}  最新版本：${scriptVersionLatest} ============`)
              log(`\n=================== 共找到 ${tczsArr.length} 个账号 ===================`)
  
              if (debug) {
@@ -194,7 +194,7 @@ function signin(timeout = 3 * 1000) {
                 }
 
                 let result = JSON.parse(data);
-                if (result.code == 0 && result.hasOwnProperty("signReward")) {
+                if (result.code == 0 && result.signReward[0] != null) {
                     log(`签到成功，获得：${result.signReward[0]}`)
                 }
 
