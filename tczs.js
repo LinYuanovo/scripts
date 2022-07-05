@@ -11,7 +11,7 @@
  #同程旅行种树
  10 9-14 * * * https://raw.githubusercontent.com/LinYuanovo/scripts/main/tczs.js, tag=同程旅行种树, enabled=true
  [rewrite_local]
- https://sgame.moxigame.cn/planttree_tc//game/local/logincheck url script-request-header https://raw.githubusercontent.com/LinYuanovo/scripts/main/tczs.js
+ https://sgame.moxigame.cn/planttree_tc//game/local/logincheck url script-request-body https://raw.githubusercontent.com/LinYuanovo/scripts/main/tczs.js
  [MITM]
  hostname = sgame.moxigame.cn
  */
