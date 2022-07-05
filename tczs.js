@@ -4,7 +4,7 @@
  微信小程序：同程旅行 （入口：里程商城->每日签到->祈愿树）
  抓包：开着抓包软件进活动，抓 https://sgame.moxigame.cn/planttree_tc//game/local/logincheck 这条链接下请求体的 body 全部
  示例：{"info":{"appId":"xx","userId":"xx","activeId":"xx","startTime":xx,"endTime":xx,"time":"xx","openId":"xx=","nickname":"临渊","pltId":"xx","avatar":"xx","platform":"{\"money\":0,\"moneyId\":\"xx\"}","sign":"xx"},"sourceChannel":"xx"}
- 变量格式：export tczs='xxx@xxx '  最好放配置文件，用单引号括起来，不能有换行空格，有的话删掉。如果抓到的跑不了，把\换成\\，不行的话删掉\再试试，多个账号用 @ 或者 换行 分割
+ 变量格式：export tczs='xxx@xxx '  最好放配置文件，用单引号括起来，如果抓到的跑不了，把\换成\\，不行的话删掉\再试试，多个账号用 @ 或者 换行 分割
  Cron：10 9-14 * * *
 
  [task_local]
@@ -22,7 +22,7 @@
  const Notify = 1; //0为关闭通知，1为打开通知,默认为1
  const debug = 0; //0为关闭调试，1为打开调试,默认为0
  //////////////////////
- let scriptVersion = "1.0.2";
+ let scriptVersion = "1.0.3";
  let scriptVersionLatest = '';
  let tczs = ($.isNode() ? process.env.tczs : $.getdata("tczs")) || "";
  let tczsArr = [];
@@ -72,7 +72,8 @@
                  if (debug) {
                      log(`\n 【debug】 这是你第 ${num} 账号信息:\n ${data}\n`);
                  }
- 
+
+                 loginBack = 0;//置0，防止上一个号影响下一个号
                  log('【开始登录】');
                  await login();
                  await $.wait(2 * 1000);
@@ -149,13 +150,14 @@ function login(timeout = 3 * 1000) {
                     log(data)
                 }
 
-                let result = JSON.parse(data);
+                let result = data == "undefined" ? await login() : JSON.parse(data);
                 if (result.code == 0 && result.hasOwnProperty("token")) {
                     progress = result.role.plantInfo.score / 1000;
                     token = result.token;
                     gameId = result.role.gameId;
                     name = result.role.nickName;
                     loginBack = 1;
+                    log(`登录成功`)
                 } else {
                     log(`登录获取Token失败，原因是：${result.errMsg}，退出`)
                     loginBack = 0;
@@ -273,8 +275,8 @@ function signin(timeout = 3 * 1000) {
                      log(`\n\n【debug】===============这是 完成任务 返回data==============`);
                      log(data)
                  }
- 
-                 let result = JSON.parse(data);
+
+                 let result = data == "undefined" ? await doTask(num) : JSON.parse(data);
                  if (result.code == 0 && result.hasOwnProperty("awardItems")) {
                      //LC01 金币 k1 水滴 k2 阳光 k3 大量阳光 k6 抽奖券
                      log(`完成任务[${taskIdArr[num]}]成功，获得：${result.awardItems[0]}`)
