@@ -28,7 +28,7 @@ const Notify = 1; //0为关闭通知，1为打开通知,默认为1
 const debug = 0; //0为关闭调试，1为打开调试,默认为0
 const uaNum = 1; //随机UA，从0-20随便选一个填上去
 //////////////////////
-let scriptVersion = "1.1.0";
+let scriptVersion = "1.1.1";
 let scriptVersionLatest = '';
 let ddgyCk = ($.isNode() ? process.env.ddgyCk : $.getdata("ddgyCk")) || "";
 let UA = ($.isNode() ? process.env.UA : $.getdata("UA")) || "";
@@ -196,6 +196,7 @@ let ua = User_Agents[uaNum];
                         }
                     }
 
+                    waterBack = 0; //置0
                     if (challengeTimes == 0 && challengeState !=5) {
                         log('开始领取挑战');
                         await getChallengeReward();
