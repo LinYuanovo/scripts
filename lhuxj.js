@@ -144,7 +144,7 @@ function signin(timeout = 3 * 1000) {
                     log(data)
                 }
 
-                let result = JSON.parse(data);
+                let result = data == "undefined" ? await signin() : JSON.parse(data);
                 if (result.code == 0000) {
                     log(`账号[${name}]签到成功，获得：${result.data.rewards}颗龙珠`)
                     msg += `\n账号[${name}]签到成功，获得：${result.data.rewards}颗龙珠`
@@ -188,7 +188,7 @@ function getBalance(timeout = 3 * 1000) {
                     log(data)
                 }
 
-                let result = JSON.parse(data);
+                let result = data == "undefined" ? await getBalance() : JSON.parse(data);
                 if (result.code == 0000) {
                     balance = result.data.billList[0].balance;
                     log(`账号[${name}]余额为：${balance}`)
