@@ -25,7 +25,6 @@
  let name = '';
  let balance = 0.00;
  
- 
  !(async () => {
      if (!(await Envs()))
          return;
