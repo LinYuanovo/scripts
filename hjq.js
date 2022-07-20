@@ -29,7 +29,7 @@
  const uaNum = 1; //随机UA，从0-20随便选一个填上去
  const autoWithdraw = 1; //0为关闭自动提现，1为打开自动提现,默认为1
  //////////////////////
- let scriptVersion = "1.0.4";
+ let scriptVersion = "1.0.5";
  let scriptVersionLatest = '';
  let hjq = ($.isNode() ? process.env.hjq : $.getdata("hjq")) || "";
  let hjqArr = [];
@@ -92,6 +92,7 @@
 
              await poem();
              await getVersion();
+             log(`本次更新应该修复了提现问题`)
              log(`\n============ 当前版本：${scriptVersion}，最新版本：${scriptVersionLatest} ============`)
              log(`\n=================== 共找到 ${hjqArr.length} 个账号 ===================`)
 
@@ -123,7 +124,7 @@
                  }
 
                  if (debug) {
-                     log(`\n 【debug】 这是你第 ${num} 账号信息:\n ${data}\n`);
+                     log(`\n 【debug】 这是你第 ${num} 账号信息:\n ${hjq}\n`);
                  }
 
                  msg += `\n第${num}个账号运行结果：`
@@ -609,7 +610,7 @@ function getInfo() {
 function withdraw(num) {
     return new Promise((resolve) => {
         let url = {
-            url: encodeURI(`https://point.jrongjie.com/web/exchange/receiveGoods?exchange_id=${txIdArr[num]}&type_id=26&user_phone=&account=${tx[0]}&real_name=${tx[1]}`),
+            url: encodeURI(`https://point.jrongjie.com/web/exchange/receiveGoods?exchange_id=${txIdArr[num]}&type_id=1&user_phone=&account=${tx[0]}&real_name=${tx[1]}`),
             headers: {"Host":"point.jrongjie.com","accept":"application/json, text/plain, */*","authorization":`${hjqAU}`,"user-agent":`${ua}`},
         }
 
@@ -631,6 +632,7 @@ function withdraw(num) {
                     msg += `\n提现成功`
                 } else {
                     log(`提现失败，原因是：${result.msg}`)
+                    msg += `\n提现失败，原因是：${result.msg}`
                 }
 
             } catch (e) {
