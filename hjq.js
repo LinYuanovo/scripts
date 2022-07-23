@@ -29,7 +29,7 @@
  const uaNum = 1; //随机UA，从0-20随便选一个填上去
  const autoWithdraw = 1; //0为关闭自动提现，1为打开自动提现,默认为1
  //////////////////////
- let scriptVersion = "1.0.5";
+ let scriptVersion = "1.0.7";
  let scriptVersionLatest = '';
  let hjq = ($.isNode() ? process.env.hjq : $.getdata("hjq")) || "";
  let hjqArr = [];
@@ -92,7 +92,6 @@
 
              await poem();
              await getVersion();
-             log(`本次更新应该修复了提现问题`)
              log(`\n============ 当前版本：${scriptVersion}，最新版本：${scriptVersionLatest} ============`)
              log(`\n=================== 共找到 ${hjqArr.length} 个账号 ===================`)
 
@@ -124,7 +123,7 @@
                  }
 
                  if (debug) {
-                     log(`\n 【debug】 这是你第 ${num} 账号信息:\n ${hjq}\n`);
+                     log(`\n 【debug】 这是你第 ${num} 账号信息:\n ${data}\n`);
                  }
 
                  msg += `\n第${num}个账号运行结果：`
@@ -632,7 +631,6 @@ function withdraw(num) {
                     msg += `\n提现成功`
                 } else {
                     log(`提现失败，原因是：${result.msg}`)
-                    msg += `\n提现失败，原因是：${result.msg}`
                 }
 
             } catch (e) {
@@ -664,11 +662,7 @@ async function GetRewrite() {
  // ============================================变量检查============================================ \\
  async function Envs() {
      if (hjqTX) {
-         if (hjqTX.indexOf("@") != -1) {
-             hjqTX.split("@").forEach((item) => {
-                 hjqTXArr.push(item);
-             });
-         } else if (hjqTX.indexOf("\n") != -1) {
+         if (hjqTX.indexOf("\n") != -1) {
              hjqTX.split("\n").forEach((item) => {
                  hjqTXArr.push(item);
              });
