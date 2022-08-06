@@ -3,7 +3,7 @@
  日期：7-1
  软件：抖音极速版
  抓包：进入活动后，抓 api5-normal-c-hl.amemv.com 域名请求体里cookie 或者别的域名也有可能，反正是活动里面的cookie
- 变量格式：export dyjsAPP='xxx@xxx ' 
+ 变量格式：export dyjsAPP='xxx' 
  Cron： 13,43 8-18,23 * * *
 
  不支持多账号！不支持多账号！不支持多账号！多账号跑会有错误
