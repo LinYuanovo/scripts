@@ -16,7 +16,7 @@ const $ = new Env('联想智选签到');
 const notify = $.isNode() ? require('./sendNotify') : '';
 const {log} = console;
 const cryptojs = require('crypto-js');
-const Notify = 0; //0为关闭通知，1为打开通知,默认为1
+const Notify = 1; //0为关闭通知，1为打开通知,默认为1
 const debug = 0; //0为关闭调试，1为打开调试,默认为0
 let scriptVersion = "1.1.0";
 //////////////////////
