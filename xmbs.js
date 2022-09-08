@@ -61,7 +61,7 @@
              msg += `\n第${num}个账号运行结果：`
 
              console.log('开始刷步');
-             await addStep2();
+             await addStep1();
              await $.wait(2 * 1000);
              
          }
@@ -78,25 +78,16 @@
  function addStep1(timeout = 3 * 1000) {
      return new Promise((resolve) => {
          let url = {
-             url: `https://api.shuabu.net/apimfsb/xm.php`,
+             url: `https://apis.jxcxin.cn/api/mi?user=${bs[0]}&password=${bs[1]}&step=${bs[2]}&ver=cxydzsv3`,
              headers: {
-                 "Host": "api.shuabu.net",
-                 "Connection": "keep-alive",
-                 "sec-ch-ua": "\"Microsoft Edge\";v=\"105\", \" Not;A Brand\";v=\"99\", \"Chromium\";v=\"105\"",
-                 "Accept": "application/json, text/javascript, */*; q=0.01",
-                 "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-                 "sec-ch-ua-mobile": "?0",
-                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36 Edg/105.0.1343.27",
-                 "sec-ch-ua-platform": "\"Windows\"",
-                 "Origin": "https://mfsb.cn",
-                 "Sec-Fetch-Site": "cross-site",
-                 "Sec-Fetch-Mode": "cors",
-                 "Sec-Fetch-Dest": "empty",
-                 "Referer": "https://mfsb.cn/",
-                 "Accept-Encoding": "gzip, deflate, br",
-                 "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6"
+                 "Host": "apis.jxcxin.cn",
+                 "accept": "application/json, text/javascript, */*; q=0.01",
+                 "user-agent": "Mozilla/5.0 (Linux; Android 10; MI 8 Build/QKQ1.190828.002;) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/83.0.4103.101 Mobile Safari/537.36",
+                 "origin": "http://apk.52dun.cn",
+                 "referer": "http://apk.52dun.cn/",
+                 "accept-encoding": "gzip, deflate",
+                 "accept-language": "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7"
              },
-             body: `time=${timestampS()}&phone=${bs[0]}&password=${bs[1]}&step=${bs[2]}&key=`
          }
  
          if (debug) {
@@ -104,7 +95,7 @@
              console.log(JSON.stringify(url));
          }
  
-         $.post(url, async (error, response, data) => {
+         $.get(url, async (error, response, data) => {
              try {
                  if (debug) {
                      console.log(`\n\n【debug】===============这是 步数接口1 返回data==============`);
@@ -119,7 +110,7 @@
  
                  } else {  
  
-                     console.log(`\n刷步失败,尝试下一个接口`)
+                     console.log(`\n刷步失败`)
                      back = 1;
  
                  }
