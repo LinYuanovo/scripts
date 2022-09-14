@@ -937,9 +937,9 @@ async function GetRewrite() {
         if (ddgyCk) {
             if (ddgyCk.indexOf(ck) == -1) {
                 ddgyCk = ddgyCk + "@" + ck;
-                $.setdata(ckStr, "ddgyCk");
+                $.setdata(ddgyCk, "ddgyCk");
                 List = ddgyCk.split("@");
-                $.msg($.name + ` 获取第${ddgyCk.length}个 ck 成功: ${ck} ,不用请自行关闭重写!`);
+                $.msg($.name + ` 获取第${List.length}个 ck 成功: ${ck} ,不用请自行关闭重写!`);
             }
         } else {
             $.setdata(ck, "ddgyCk");
