@@ -4,6 +4,7 @@
  * 日期：6-6
  * 变量格式：export xmbs='小米运动&密码&步数@xxx '  多个账号用@分割 
  * 定时一天一次
+ * 更新成换行登录
  */
 
  const $ = new Env('小米步数');
@@ -178,8 +179,8 @@
  // ============================================变量检查============================================ \\
  async function Envs() {
      if (xmbs) {
-         if (xmbs.indexOf("@") != -1) {
-             xmbs.split("@").forEach((item) => {
+         if (xmbs.indexOf("\n") != -1) {
+             xmbs.split("\n").forEach((item) => {
                  xmbsArr.push(item);
              });
          } else {
